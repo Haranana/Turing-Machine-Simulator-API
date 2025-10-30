@@ -1,8 +1,8 @@
 package com.hubosm.turingsimulator.services;
 
-import com.hubosm.turingsimulator.dtos.CreateTuringMachineDto;
-import com.hubosm.turingsimulator.dtos.SimulationStatusDto;
-import com.hubosm.turingsimulator.dtos.SimulationStepDto;
+import com.hubosm.turingsimulator.domain.*;
+import com.hubosm.turingsimulator.dtos.*;
+import com.hubosm.turingsimulator.exceptions.TuringMachineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +42,10 @@ public class SimulationServiceImpl implements SimulationService{
        return cacheService.getList(jobId, "steps").stream().skip(offset).limit(limit).map(o->(SimulationStepDto)o).toList();
     }
 
+    public CreatedSimulationDto runSimulation(CreateSimulationDto dto){
+        TuringMachine tm = new TuringMachine(dto.getInitialState(), dto.getAcceptState(), dto.getRejectState(), dto.getProgram(), dto.getSeparator());
+        CreatedSimulationDto outputDto = tm.runSimulation(dto.getInput());
+        return outputDto;
+    }
 
 }

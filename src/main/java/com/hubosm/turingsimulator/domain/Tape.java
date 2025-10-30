@@ -4,6 +4,9 @@ package com.hubosm.turingsimulator.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Tape {
 
     private final char blank;
@@ -49,7 +52,29 @@ public class Tape {
         head = originalHead;
     }
 
-    private static class TapeCell{
+    public TapeState ToTapeState(){
+
+        Map<Integer, String> tapeMap = new HashMap<>();
+        int headId = 0;
+
+        TapeCell tempHead = head;
+
+        while(tempHead.leftCell!=null){
+            tempHead = tempHead.leftCell;
+            headId++;
+        }
+
+        int mapIt = 0;
+        while(tempHead!=null){
+            tapeMap.put(mapIt , String.valueOf(tempHead.value));
+            mapIt++;
+            tempHead = tempHead.rightCell;
+        }
+
+        return new TapeState(headId ,tapeMap);
+    }
+
+    private static class TapeCell {
         private char value;
         private TapeCell leftCell = null;
         private TapeCell rightCell = null;

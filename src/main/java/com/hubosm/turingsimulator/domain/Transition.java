@@ -18,9 +18,9 @@ public class Transition {
     private TransitionAction action;
 
     public static TransitionAction stringToAction(String action){
-        if(action.equals("R")){
+        if(action.equals("RIGHT")){
             return TransitionAction.RIGHT;
-        }else if(action.equals("L")){
+        }else if(action.equals("LEFT")){
             return TransitionAction.LEFT;
         }else {
             return TransitionAction.STAY;

@@ -1,5 +1,6 @@
 package com.hubosm.turingsimulator.domain;
 
+import com.hubosm.turingsimulator.dtos.CreatedSimulationDto;
 import com.hubosm.turingsimulator.dtos.SimulationStepDto;
 import com.hubosm.turingsimulator.exceptions.TuringMachineException;
 import lombok.Getter;
@@ -169,6 +170,79 @@ public class TuringMachine {
 
         }
         return resultSimulation;
+    }
+
+    public CreatedSimulationDto runSimulation(String input){
+
+        CreatedSimulationDto output = new CreatedSimulationDto();
+        output.steps = new ArrayList<>();
+        output.steps.add(new ArrayList<>());
+
+        int maxSteps = SimulationConfig.maxSteps;
+        int curStep = 0;
+
+        tape.placeText(input);
+
+        State currentState = initialState;
+        char readChar;
+        Transition currentTransition;
+
+        do {
+
+            //Initialize variables to be saved in dto
+
+            int stepTapeIndex = 0;
+            String stepAction;
+            String stepWrittenChar;
+            String stepStateBefore;
+            String stepStateAfter;
+            Map<Integer, String> tapeBefore;
+            TapeState tapeState = tape.ToTapeState();
+
+            //Find whole Transition based on current state and character read by head
+            curStep++;
+            readChar = tape.readHead();
+            try {
+                currentTransition = program.getTransitionByLeftSide(currentState, readChar).orElseThrow();
+            } catch (Exception e) {
+                throw new TuringMachineException("call to non-existing transition from: " + currentState.name() + " ; " + readChar);
+            }
+
+            //Write character under head based on Transition
+            stepWrittenChar = String.valueOf(currentTransition.getWriteSymbol());
+            tape.writeOnHead(currentTransition.getWriteSymbol());
+
+            //Move head based on found Transition
+            Transition.TransitionAction simulationAction = currentTransition.getAction();
+            switch (currentTransition.getAction()) {
+                case RIGHT:
+                    tape.moveHeadRight();
+                    stepAction = "RIGHT";
+                    break;
+                case LEFT:
+                    stepAction = "LEFT";
+                    tape.moveHeadLeft();
+                    break;
+                default:
+                    stepAction = "STAY";
+                    break;
+            }
+
+
+            //modify current state and save simulation step
+            stepStateBefore = currentState.name();
+            currentState = currentTransition.getNextState();
+            stepStateAfter = currentState.name();
+
+
+            FullSimulationStep currentSimulationStep = new FullSimulationStep(
+                    0, simulationAction, String.valueOf(readChar), stepWrittenChar,
+                    new State(stepStateBefore), new State(stepStateAfter),tapeState);
+            output.steps.get(0).add(currentSimulationStep);
+            //decide if program should be stopped
+        } while (!currentState.equals(acceptState) && !currentState.equals(rejectState) && maxSteps > curStep);
+
+        return output;
     }
 
     public void run(String input, BiConsumer<Integer , SimulationStepDto> onStepUpdate){
