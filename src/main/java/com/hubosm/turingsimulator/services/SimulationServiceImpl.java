@@ -44,8 +44,7 @@ public class SimulationServiceImpl implements SimulationService{
 
     public CreatedSimulationDto runSimulation(CreateSimulationDto dto){
         TuringMachine tm = new TuringMachine(dto.getInitialState(), dto.getAcceptState(), dto.getRejectState(), dto.getProgram(), dto.getSeparator());
-        CreatedSimulationDto outputDto = tm.runSimulation(dto.getInput());
-        return outputDto;
+        return tm.runSimulation(dto.getInput());
     }
 
 }

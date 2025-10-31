@@ -39,7 +39,9 @@ public class TuringMachine {
         try {
             for (String trans : program) {
                 //in future there may be different separator beetwen left and right side of Transition, so here regex is used for split instead of simply using separator
-                List<String> parts = List.of(trans.split(regex, -1));
+                System.out.println("before: " +  trans);
+                List<String> parts = List.of(trans.replaceAll(" ", "").split(regex, -1));
+
                 State currentState = new State(parts.get(0));
                 String readSymbol = parts.get(1);
                 State nextState = new State(parts.get(2));
@@ -50,6 +52,7 @@ public class TuringMachine {
                 states.add(nextState);
 
                 this.program.addTransition(new Transition(currentState, readSymbol.charAt(0), nextState, writeSymbol.charAt(0), Transition.stringToAction(action)));
+                System.out.println("after: " +  this.program.getTransitions().get(this.program.getTransitions().size()-1));
             }
         } catch (Exception e) {
             throw new TuringMachineException("Error in loading transitions");
@@ -173,6 +176,8 @@ public class TuringMachine {
     }
 
     public CreatedSimulationDto runSimulation(String input){
+
+        ;
 
         CreatedSimulationDto output = new CreatedSimulationDto();
         output.steps = new ArrayList<>();

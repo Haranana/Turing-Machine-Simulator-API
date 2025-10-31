@@ -19,17 +19,18 @@ public class SimulationRestController {
 
     private final SimulationServiceImpl simulationService;
 
-    /*
+
     @PostMapping
     public ResponseEntity<CreatedSimulationDto> simulate(@Valid @RequestBody CreateSimulationDto dto){
         CreatedSimulationDto outputDto = simulationService.runSimulation(dto);
         return ResponseEntity.accepted().body(outputDto);
-    }*/
+    }
 
+    /*
     @PostMapping
     public ResponseEntity<CreateSimulationDto> simulate(@Valid @RequestBody CreateSimulationDto dto){
         return ResponseEntity.accepted().body(dto);
-    }
+    }*/
 
     /*
     @PostMapping
