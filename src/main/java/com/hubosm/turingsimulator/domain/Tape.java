@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class Tape {
 
-    private final char blank;
+    private final String blank;
     private TapeCell head;
 
-    public Tape(char blank) {
+    public Tape(String blank) {
         this.blank = blank;
         head = new TapeCell(blank);
     }
@@ -33,12 +33,20 @@ public class Tape {
         head = head.leftCell;
     }
 
-    public char readHead(){
+    public String readHead(){
         return head.value;
     }
 
-    public void writeOnHead(char value){
+    public char readHeadChar(){
+        return head.value.toCharArray()[0];
+    }
+
+    public void writeOnHead(String value){
         head.value = value;
+    }
+
+    public void writeOnHead(char value){
+        head.value = String.valueOf(value);
     }
 
     //places text onto tape, starting from current head position and moving right
@@ -46,13 +54,13 @@ public class Tape {
     public void placeText(String input){
         TapeCell originalHead = head;
         for(char inputChar : input.toCharArray()){
-            writeOnHead(inputChar);
+            writeOnHead(String.valueOf(inputChar));
             moveHeadRight();
         }
         head = originalHead;
     }
 
-    public TapeState ToTapeState(){
+    public TapeState ToTapeState(boolean blankToWhiteSpace){
 
         Map<Integer, String> tapeMap = new HashMap<>();
         int headId = 0;
@@ -66,7 +74,7 @@ public class Tape {
 
         int mapIt = 0;
         while(tempHead!=null){
-            tapeMap.put(mapIt , String.valueOf(tempHead.value));
+            tapeMap.put(mapIt ,  String.valueOf(tempHead.value).equals(blank)? "" : String.valueOf(tempHead.value));
             mapIt++;
             tempHead = tempHead.rightCell;
         }
@@ -74,12 +82,14 @@ public class Tape {
         return new TapeState(headId ,tapeMap);
     }
 
+    //TapeCell holds string as value but it should only store 1-characters string
+    //Except when writing blank, which will be deleted before  tape to application
     private static class TapeCell {
-        private char value;
+        private String value;
         private TapeCell leftCell = null;
         private TapeCell rightCell = null;
 
-        public TapeCell(char value) {
+        public TapeCell(String value) {
             this.value = value;
         }
     }

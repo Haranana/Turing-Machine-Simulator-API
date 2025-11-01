@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.function.BiConsumer;
-
+/*
 @Service
 @RequiredArgsConstructor
 public class SimulationRunnerImpl implements SimulationRunner{
@@ -19,4 +19,4 @@ public class SimulationRunnerImpl implements SimulationRunner{
     public void run(CreateTuringMachineDto dto, BiConsumer<Integer, SimulationStepDto> onStepUpdate) {
         turingMachineMapper.createDtoToDomain(dto).run(dto.getInput(), onStepUpdate);
     }
-}
+}*/

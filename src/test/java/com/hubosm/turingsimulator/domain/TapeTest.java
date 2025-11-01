@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TapeTest {
 
     private Tape tape;
-    private final char tapeBlankChar = '_';
+    private final String tapeBlankChar = String.valueOf('_');
 
     @BeforeEach
     void setUp(){

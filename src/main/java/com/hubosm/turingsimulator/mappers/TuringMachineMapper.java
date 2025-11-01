@@ -12,6 +12,7 @@ public class TuringMachineMapper {
                 dto.getAcceptState(),
                 dto.getRejectState(),
                 dto.getProgram(),
-                dto.getSeparator());
+                dto.getSeparator(),
+                "_");
     }
 }

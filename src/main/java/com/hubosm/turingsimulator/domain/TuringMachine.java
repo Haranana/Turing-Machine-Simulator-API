@@ -24,15 +24,17 @@ public class TuringMachine {
     private Set<Character> tapeAlphabet;
     private TmProgram program;
     private Tape tape;
+    private String blank;
 
-    public TuringMachine(String initialState, String acceptState, String rejectState, Collection<String> program, Character separator){
+    public TuringMachine(String initialState, String acceptState, String rejectState, Collection<String> program, Character separator, String blank){
         String regex    = Pattern.quote(String.valueOf(separator));
         this.states = new HashSet<>();
-        this.tape = new Tape('_');
+        this.tape = new Tape(blank);
         this.program = new TmProgram();
         this.acceptState = new State(acceptState);
         this.rejectState = new State(rejectState);
         this.initialState = new State(initialState);
+        this.blank = blank;
         states.add(this.acceptState);
         states.add(this.initialState);
 
@@ -59,125 +61,9 @@ public class TuringMachine {
         }
     }
 
-    public TuringMachine(Set<State> states, State initialState, State acceptState, TmProgram program) {
-        this.states = states;
-        this.initialState = initialState;
-        this.acceptState = acceptState;
-        this.program = program;
-    }
-
-    public Simulation run(String input){
-        int maxSteps = SimulationConfig.maxSteps;
-        Simulation resultSimulation = new Simulation();
-        tape.placeText(input);
-
-        State currentState = initialState;
-        char readChar = tape.readHead();
-        Transition currentTransition;
-        while(true){
-
-            //Find whole Transition based on current state and character read by head
-            readChar = tape.readHead();
-            try{
-                currentTransition = program.getTransitionByLeftSide(currentState, readChar).orElseThrow();
-            } catch (Exception e) {
-                throw new TuringMachineException("call to non-existing transition from: " + currentState.name() + " ; " + readChar);
-            }
-
-            //Write character under head based on Transition
-            tape.writeOnHead(currentTransition.getWriteSymbol());
-
-            //Move head based on found Transition
-            Transition.TransitionAction simulationAction = currentTransition.getAction();
-            switch (currentTransition.getAction()){
-                case RIGHT:
-                    tape.moveHeadRight();
-                    break;
-                case LEFT:
-                    tape.moveHeadLeft();
-                    break;
-                case STAY:
-                    break;
-                default:
-                    break;
-            }
-
-            //modify current state and save simulation step
-            currentState = currentTransition.getNextState();
-            resultSimulation.addStep(new SimulationStep(currentState, simulationAction));
-
-            //decide if program should be stopped
-            if(currentState.equals(acceptState)){
-                resultSimulation.setOutput(true);
-                break;
-            }else if(currentState.equals(rejectState)){
-                resultSimulation.setOutput(false);
-                break;
-            }else if(maxSteps == resultSimulation.getSteps().size()){
-                break;
-            }
-
-        }
-        return resultSimulation;
-    }
-
-    public Simulation run(String input, int maxSteps){
-        Simulation resultSimulation = new Simulation();
-        tape.placeText(input);
-
-        State currentState = initialState;
-        char readChar;
-        Transition currentTransition;
-        while(true){
-
-            //Find whole Transition based on current state and character read by head
-            readChar = tape.readHead();
-            try{
-                currentTransition = program.getTransitionByLeftSide(currentState, readChar).orElseThrow();
-            } catch (Exception e) {
-                throw new TuringMachineException("call to non-existing transition from: " + currentState.name() + " ; " + readChar);
-            }
-
-            //Write character under head based on Transition
-            tape.writeOnHead(currentTransition.getWriteSymbol());
-
-            //Move head based on found Transition
-            Transition.TransitionAction simulationAction = currentTransition.getAction();
-            switch (currentTransition.getAction()){
-                case RIGHT:
-                    tape.moveHeadRight();
-                    break;
-                case LEFT:
-                    tape.moveHeadLeft();
-                    break;
-                case STAY:
-                    break;
-                default:
-                    break;
-            }
-
-            //modify current state and save simulation step
-            currentState = currentTransition.getNextState();
-            resultSimulation.addStep(new SimulationStep(currentState, simulationAction));
-
-            //decide if program should be stopped
-            if(currentState.equals(acceptState)){
-                resultSimulation.setOutput(true);
-                break;
-            }else if(currentState.equals(rejectState)){
-                resultSimulation.setOutput(false);
-                break;
-            }else if(maxSteps == resultSimulation.getSteps().size()){
-                break;
-            }
-
-        }
-        return resultSimulation;
-    }
-
     public CreatedSimulationDto runSimulation(String input){
 
-        ;
+
 
         CreatedSimulationDto output = new CreatedSimulationDto();
         output.steps = new ArrayList<>();
@@ -202,11 +88,11 @@ public class TuringMachine {
             String stepStateBefore;
             String stepStateAfter;
             Map<Integer, String> tapeBefore;
-            TapeState tapeState = tape.ToTapeState();
+            TapeState tapeState = tape.ToTapeState(true);
 
             //Find whole Transition based on current state and character read by head
             curStep++;
-            readChar = tape.readHead();
+            readChar = tape.readHeadChar();
             try {
                 currentTransition = program.getTransitionByLeftSide(currentState, readChar).orElseThrow();
             } catch (Exception e) {
@@ -248,65 +134,5 @@ public class TuringMachine {
         } while (!currentState.equals(acceptState) && !currentState.equals(rejectState) && maxSteps > curStep);
 
         return output;
-    }
-
-    public void run(String input, BiConsumer<Integer , SimulationStepDto> onStepUpdate){
-        int maxSteps = SimulationConfig.maxSteps;
-        int curStep = 0;
-        tape.placeText(input);
-
-        State currentState = initialState;
-        char readChar = tape.readHead();
-        Transition currentTransition;
-        while(true){
-
-            //Initialize variables to be saved in dto
-            int stepTapeIndex = 0;
-            String stepAction;
-            String stepWrittenChar;
-            String stepStateBefore;
-            String stepStateAfter;
-
-            //Find whole Transition based on current state and character read by head
-            curStep++;
-            readChar = tape.readHead();
-            try{
-                currentTransition = program.getTransitionByLeftSide(currentState, readChar).orElseThrow();
-            } catch (Exception e) {
-                throw new TuringMachineException("call to non-existing transition from: " + currentState.name() + " ; " + readChar);
-            }
-
-            //Write character under head based on Transition
-            stepWrittenChar = String.valueOf(currentTransition.getWriteSymbol());
-            tape.writeOnHead(currentTransition.getWriteSymbol());
-
-            //Move head based on found Transition
-            Transition.TransitionAction simulationAction = currentTransition.getAction();
-            switch (currentTransition.getAction()){
-                case RIGHT:
-                    tape.moveHeadRight();
-                    stepAction = "R";
-                    break;
-                case LEFT:
-                    stepAction = "L";
-                    tape.moveHeadLeft();
-                    break;
-                default:
-                    stepAction = "S";
-                    break;
-            }
-
-
-            //modify current state and save simulation step
-            stepStateBefore = currentState.name();
-            currentState = currentTransition.getNextState();
-            stepStateAfter = currentState.name();
-            onStepUpdate.accept(curStep, new SimulationStepDto(0 ,stepAction, String.valueOf(readChar), stepWrittenChar, stepStateBefore, stepStateAfter));
-
-            //decide if program should be stopped
-            if(currentState.equals(acceptState) || currentState.equals(rejectState) || maxSteps <= curStep) {
-                break;
-            }
-        }
     }
 }

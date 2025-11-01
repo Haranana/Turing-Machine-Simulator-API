@@ -41,7 +41,7 @@ public class TuringMachineTest {
         final String acceptState = "qAcc";
         final String rejectState = "qRej";
 
-       return new TuringMachine(initialState, acceptState, rejectState, program, sep);
+       return new TuringMachine(initialState, acceptState, rejectState, program, sep, "_");
     }
 
     @Test

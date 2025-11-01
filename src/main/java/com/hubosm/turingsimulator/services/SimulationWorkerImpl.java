@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-
+/*
 @Component
 @RequiredArgsConstructor
 public class SimulationWorkerImpl implements Runnable, SimulationWorker {
@@ -72,3 +72,4 @@ public class SimulationWorkerImpl implements Runnable, SimulationWorker {
         batch.clear();
     }
 }
+*/

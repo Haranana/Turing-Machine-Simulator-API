@@ -21,5 +21,7 @@ public class CreateSimulationDto {
     private Collection<String> program;
     @NotNull
     private Character separator;
+    @NotNull
+    private String blank;
     private String input;
 }
