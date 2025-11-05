@@ -1,0 +1,35 @@
+package com.hubosm.turingsimulator.mappers;
+
+import com.hubosm.turingsimulator.dtos.UserCreateDto;
+import com.hubosm.turingsimulator.dtos.UserEditDto;
+import com.hubosm.turingsimulator.dtos.UserReturnDto;
+import com.hubosm.turingsimulator.entities.User;
+import com.hubosm.turingsimulator.services.SecurityServiceImpl;
+import com.hubosm.turingsimulator.utils.AccountStatus;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+
+@Component
+public class UserMapper {
+
+    SecurityServiceImpl securityService;
+
+    UserMapper(SecurityServiceImpl securityService){
+        this.securityService = securityService;
+    }
+
+    public User CreateDtoToEntity(UserCreateDto dto){
+
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setPasswordHash(securityService.encode(dto.getPassword()));
+        user.setStatus(AccountStatus.NOT_ACTIVATED);
+        user.setTuringMachines(new ArrayList<>());
+        return user;
+    }
+
+    public UserReturnDto EntityToReturnDto(User entity){
+        return UserReturnDto.builder().id(entity.getId()).email(entity.getEmail()).status(entity.getStatus()).createdAt(entity.getCreatedAt()).build();
+    }
+}

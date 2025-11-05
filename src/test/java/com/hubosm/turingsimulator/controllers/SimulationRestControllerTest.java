@@ -1,12 +1,6 @@
 package com.hubosm.turingsimulator.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hubosm.turingsimulator.domain.TuringMachine;
-import com.hubosm.turingsimulator.dtos.CreateTuringMachineDto;
-import com.hubosm.turingsimulator.dtos.SimulationCreatedDto;
-import com.hubosm.turingsimulator.dtos.SimulationStatusDto;
-import com.hubosm.turingsimulator.dtos.SimulationStepDto;
-import com.hubosm.turingsimulator.services.SimulationService;
 import com.hubosm.turingsimulator.services.SimulationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

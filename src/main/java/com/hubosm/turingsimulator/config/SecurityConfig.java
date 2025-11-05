@@ -16,10 +16,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {})           // <— ważne!
-                .csrf(csrf -> csrf.disable()) // często wyłączamy CSRF dla API
+                .cors(cors -> {})
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() // preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                         .anyRequest().permitAll()
                 );
         return http.build();

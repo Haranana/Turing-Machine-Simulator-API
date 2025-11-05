@@ -4,6 +4,6 @@ import com.hubosm.turingsimulator.domain.FullSimulationStep;
 
 import java.util.List;
 
-public class CreatedSimulationDto {
+public class SimulationReturnDto {
     public List<List<FullSimulationStep>> steps;
 }

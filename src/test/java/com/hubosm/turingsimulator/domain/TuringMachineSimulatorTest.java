@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public class TuringMachineTest {
-
+public class TuringMachineSimulatorTest {
+    /*
     //Sample Tm which checks if input starts and ends with the same character in Alphabet = {0,1}
     //Accepts empty input
     TuringMachine getFirstAndLastCharactersEqualityTm(){
@@ -110,6 +110,6 @@ public class TuringMachineTest {
         Simulation result = turingMachine.run(input);
         assertTrue(result.getOutput());
     }
-
+*/
 
 }

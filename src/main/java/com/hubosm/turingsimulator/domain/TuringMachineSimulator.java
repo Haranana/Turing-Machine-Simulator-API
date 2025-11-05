@@ -1,20 +1,18 @@
 package com.hubosm.turingsimulator.domain;
 
-import com.hubosm.turingsimulator.dtos.CreatedSimulationDto;
-import com.hubosm.turingsimulator.dtos.SimulationStepDto;
+import com.hubosm.turingsimulator.dtos.SimulationReturnDto;
 import com.hubosm.turingsimulator.exceptions.TuringMachineException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class TuringMachine {
+public class TuringMachineSimulator {
 
     private Set<State> states;
     private Set<Character> inputAlphabet;
@@ -26,7 +24,7 @@ public class TuringMachine {
     private Tape tape;
     private String blank;
 
-    public TuringMachine(String initialState, String acceptState, String rejectState, Collection<String> program, Character separator, String blank){
+    public TuringMachineSimulator(String initialState, String acceptState, String rejectState, Collection<String> program, Character separator, String blank){
         String regex    = Pattern.quote(String.valueOf(separator));
         this.states = new HashSet<>();
         this.tape = new Tape(blank);
@@ -61,11 +59,11 @@ public class TuringMachine {
         }
     }
 
-    public CreatedSimulationDto runSimulation(String input){
+    public SimulationReturnDto runSimulation(String input){
 
 
 
-        CreatedSimulationDto output = new CreatedSimulationDto();
+        SimulationReturnDto output = new SimulationReturnDto();
         output.steps = new ArrayList<>();
         output.steps.add(new ArrayList<>());
 
