@@ -2,6 +2,7 @@ package com.hubosm.turingsimulator.controllers;
 
 import com.hubosm.turingsimulator.dtos.*;
 import com.hubosm.turingsimulator.services.TuringMachineServiceImpl;
+import com.hubosm.turingsimulator.services.UserService;
 import com.hubosm.turingsimulator.services.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<Void> add(@Valid @RequestBody UserCreateDto dto) throws Exception {

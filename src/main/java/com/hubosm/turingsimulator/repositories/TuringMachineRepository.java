@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TuringMachineRepository extends JpaRepository<TuringMachine, Long> {
-    boolean existsByAuthorIdAndNameIgnoreCaseAndIdNot(Long authorId, String name, Long id);
-    boolean existsByAuthorIdAndNameIgnoreCase(Long authorId, String name);
+    boolean existsByAuthorIdAndNameAndIdNot(Long authorId, String name, Long id);
+    boolean existsByAuthorIdAndName(Long authorId, String name);
     Optional<TuringMachine> findByNameAndAuthor_Id(String name, Long authorId);
     List<TuringMachine> findAllByAuthor_Id(Long authorId);
     Page<TuringMachine> findAllByAuthor_Id(Long authorId, Pageable pageable);

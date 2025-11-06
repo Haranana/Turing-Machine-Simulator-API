@@ -11,10 +11,12 @@ import com.hubosm.turingsimulator.repositories.TuringMachineRepository;
 import com.hubosm.turingsimulator.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,13 +33,15 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
-    public List<TuringMachineReturnDto> getTuringMachinesByUserId(Long id, Pageable pageable) {
-        return turingMachineRepository.findAllByAuthor_Id(id, pageable).getContent()
+    public Page<TuringMachineReturnDto> getTuringMachinesByUserId(Long id, Pageable pageable) {
+        List<TuringMachineReturnDto> returnDtosList = turingMachineRepository.findAllByAuthor_Id(id, pageable).getContent()
                 .stream().map(turingMachineMapper::EntityToReturnDto).toList();
+
+        return new PageImpl<>(returnDtosList);
     }
 
     @Override
-    public void editTuringMachine(TuringMachineEditDto dto) throws Exception {
+    public TuringMachineReturnDto editTuringMachine(TuringMachineEditDto dto) throws Exception {
         TuringMachine entity = turingMachineRepository
                 .findById(dto.getId())
                 .orElseThrow(() -> new ElementNotFoundException("Turing machine not found"));
@@ -46,7 +50,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
         if (dto.getName() != null) {
             String newName = dto.getName().trim();
             boolean taken = turingMachineRepository
-                    .existsByAuthorIdAndNameIgnoreCaseAndIdNot(entity.getAuthor().getId(), newName, entity.getId());
+                    .existsByAuthorIdAndNameAndIdNot(entity.getAuthor().getId(), newName, entity.getId());
             if (taken) {
                 throw new IntegrityException("Machine with this name already exists");
             }
@@ -90,7 +94,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
             entity.setTapesAmount(ta);
         }
 
-        turingMachineRepository.save(entity);
+        return turingMachineMapper.EntityToReturnDto(turingMachineRepository.save(entity));
     }
 
     @Override
@@ -100,17 +104,17 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
-    public void addTuringMachine(TuringMachineCreateDto dto) throws Exception{
+    public TuringMachineReturnDto addTuringMachine(TuringMachineCreateDto dto) throws Exception{
 
         if(!userRepository.existsById(dto.getAuthorId())) throw new ElementNotFoundException("User not found");
         if (dto.getName() != null) {
             boolean taken = turingMachineRepository
-                    .existsByAuthorIdAndNameIgnoreCase(dto.getAuthorId(), dto.getName().trim());
+                    .existsByAuthorIdAndName(dto.getAuthorId(), dto.getName().trim());
             if (taken) {
                 throw new IntegrityException("Machine with this name already exists");
             }
 
         }
-        turingMachineRepository.save(turingMachineMapper.CreateDtoToEntity(dto));
+        return turingMachineMapper.EntityToReturnDto(turingMachineRepository.save(turingMachineMapper.CreateDtoToEntity(dto)));
     }
 }

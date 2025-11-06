@@ -1,9 +1,13 @@
 package com.hubosm.turingsimulator.exceptions;
 
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,7 +31,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IntegrityException.class)
-    public ProblemDetail integrityConflict(AccessDeniedException ex){
+    public ProblemDetail integrityConflict(IntegrityException ex){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problemDetail.setDetail(ex.getMessage());
         problemDetail.setTitle("Integrity conflict");
@@ -36,11 +40,31 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(StorageLimitException.class)
-    public ProblemDetail storageLimit(AccessDeniedException ex){
+    public ProblemDetail storageLimit(StorageLimitException ex){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setDetail(ex.getMessage());
         problemDetail.setTitle("Storage limit error");
         problemDetail.setProperty("errorCode", "STORAGE_LIMIT_ERROR");
+        return problemDetail;
+    }
+
+    /*
+    @ExceptionHandler(ValidationException.class)
+    public ProblemDetail validationError(ValidationException ex){
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setTitle("Validation error");
+        problemDetail.setProperty("errorCode", "VALIDATION_ERROR");
+        return problemDetail;
+    }*/
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail validationError(MethodArgumentNotValidException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        problemDetail.setTitle("Validation failed");
+        HashMap<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
+        problemDetail.setProperty("validationErrors", errors);
         return problemDetail;
     }
 

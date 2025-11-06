@@ -9,20 +9,17 @@ import com.hubosm.turingsimulator.entities.User;
 import com.hubosm.turingsimulator.repositories.TuringMachineRepository;
 import com.hubosm.turingsimulator.repositories.UserRepository;
 import com.hubosm.turingsimulator.utils.AccountStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
 @Component
+@RequiredArgsConstructor
 public class TuringMachineMapper {
 
     final UserRepository userRepository;
     final TuringMachineRepository turingMachineRepository;
-
-    public TuringMachineMapper(UserRepository userRepository, TuringMachineRepository turingMachineRepository) {
-        this.userRepository = userRepository;
-        this.turingMachineRepository = turingMachineRepository;
-    }
 
     public TuringMachine CreateDtoToEntity(TuringMachineCreateDto dto) throws Exception {
         User machineAuthor = userRepository.findById(dto.getAuthorId()).orElseThrow(()->new Exception("user not found"));

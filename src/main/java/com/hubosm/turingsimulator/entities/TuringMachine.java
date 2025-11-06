@@ -27,14 +27,10 @@ public class TuringMachine {
     @NotNull
     private User author;
 
-    @Column(name = "name")
-    @NotNull
-    @NotEmpty
-    @Size(max = 30)
+    @Column(name = "name",nullable = false, length = 30)
     private String name;
 
-    @Column(name = "description")
-    @Size(max = 255)
+    @Column(name = "description",nullable = false, length = 255)
     private String description;
 
     @Lob
@@ -42,41 +38,26 @@ public class TuringMachine {
     @Column(columnDefinition = "TEXT" , name="program")
     private String program;
 
-    @Column(name = "initial_state")
-    @NotNull
-    @NotEmpty
-    @Size(max = 32)
+    @Column(name = "initial_state" ,nullable = false, length = 32)
     private String initialState;
 
-    @Column(name = "accept_state")
-    @Size(max = 32)
+    @Column(name = "accept_state", length = 32)
     private String acceptState;
 
-    @Column(name = "reject_state")
-    @Size(max = 32)
+    @Column(name = "reject_state", length = 32)
     private String rejectState;
 
-    @Column(name = "blank")
-    @Size(max = 10)
-    @NotNull
-    @NotEmpty
+    @Column(name = "blank", nullable = false, length = 10)
     private String blank;
 
-    @Column(name = "sep1")
-    @Size(max = 10)
-    @NotNull
-    @NotEmpty
+    @Column(name = "sep1", nullable = false, length = 10)
     private String sep1;
 
-    @Column(name = "sep2")
-    @Size(max = 10)
-    @NotNull
-    @NotEmpty
+    @Column(name = "sep2", nullable = false, length = 10)
     private String sep2;
 
-    @Column(name = "tapes_amount")
+    @Column(name = "tapes_amount", nullable = false)
     @Min(1)
-    @NotNull
     private Integer tapesAmount;
 
     @CreationTimestamp

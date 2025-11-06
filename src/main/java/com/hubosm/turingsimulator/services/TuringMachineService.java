@@ -13,8 +13,11 @@ import java.util.List;
 public interface TuringMachineService {
 
     TuringMachineReturnDto getTuringMachine(Long id) throws Exception;
-    List<TuringMachineReturnDto> getTuringMachinesByUserId(Long id, Pageable pageable);
-    void editTuringMachine(TuringMachineEditDto dto) throws Exception;
+    Page<TuringMachineReturnDto> getTuringMachinesByUserId(Long id, Pageable pageable);
+
+    TuringMachineReturnDto editTuringMachine(TuringMachineEditDto dto) throws Exception;
+
     void deleteTuringMachine(Long id) throws Exception;
-    void addTuringMachine(TuringMachineCreateDto dto) throws Exception;
+
+    TuringMachineReturnDto addTuringMachine(TuringMachineCreateDto dto) throws Exception;
 }

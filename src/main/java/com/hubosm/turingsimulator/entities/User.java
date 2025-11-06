@@ -34,7 +34,6 @@ public class User {
     private String email;
 
     @Column(name = "password_hash" , nullable = false)
-    @NotEmpty
     private String passwordHash;
 
     @CreationTimestamp

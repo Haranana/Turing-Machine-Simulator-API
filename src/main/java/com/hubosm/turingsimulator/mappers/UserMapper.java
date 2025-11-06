@@ -4,20 +4,19 @@ import com.hubosm.turingsimulator.dtos.UserCreateDto;
 import com.hubosm.turingsimulator.dtos.UserEditDto;
 import com.hubosm.turingsimulator.dtos.UserReturnDto;
 import com.hubosm.turingsimulator.entities.User;
+import com.hubosm.turingsimulator.services.SecurityService;
 import com.hubosm.turingsimulator.services.SecurityServiceImpl;
 import com.hubosm.turingsimulator.utils.AccountStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
 
-    SecurityServiceImpl securityService;
-
-    UserMapper(SecurityServiceImpl securityService){
-        this.securityService = securityService;
-    }
+    final SecurityService securityService;
 
     public User CreateDtoToEntity(UserCreateDto dto){
 
