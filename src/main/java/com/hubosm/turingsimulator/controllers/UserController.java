@@ -19,11 +19,12 @@ public class UserController {
 
     private final UserService userService;
 
+    /*
     @PostMapping
     public ResponseEntity<Void> add(@Valid @RequestBody UserCreateDto dto) throws Exception {
         userService.createUser(dto);
         return ResponseEntity.ok().build();
-    }
+    }*/
 
     @DeleteMapping
     public ResponseEntity<Void> delete( @RequestBody Long id) throws Exception{
@@ -36,4 +37,6 @@ public class UserController {
         UserReturnDto dto = userService.getUser(id);
         return ResponseEntity.ok(dto);
     }
+
+
 }

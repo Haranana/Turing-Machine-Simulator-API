@@ -23,9 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(SimulationRestController.class)
+@WebMvcTest(SimulationController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class SimulationRestControllerTest {
+public class SimulationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
