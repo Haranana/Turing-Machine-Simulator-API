@@ -39,8 +39,10 @@ public class TuringMachineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) throws Exception{
-        turingMachineService.deleteTuringMachine(id);
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal User principal,
+                                       @PathVariable Long id) throws Exception{
+        System.out.println(principal + " " + id );
+        turingMachineService.deleteTuringMachine(id , principal.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -54,9 +56,10 @@ public class TuringMachineController {
     public ResponseEntity<Page<TuringMachineReturnDto>> getByAuthor(
             @AuthenticationPrincipal User principal,
             @PageableDefault(size = 50) Pageable pageable) {
-        System.out.println(principal +  " : " + pageable);
+        //System.out.println(principal +  " : " + pageable);
         Page<TuringMachineReturnDto> returnDtoPage = turingMachineService.getTuringMachinesByUserId(principal.getId(), pageable);
 
+        //System.out.println(returnDtoPage.getContent().get(0));
         return ResponseEntity.ok(returnDtoPage);
     }
 

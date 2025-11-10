@@ -4,6 +4,7 @@ import com.hubosm.turingsimulator.dtos.TuringMachineCreateDto;
 import com.hubosm.turingsimulator.dtos.TuringMachineEditDto;
 import com.hubosm.turingsimulator.dtos.TuringMachineReturnDto;
 import com.hubosm.turingsimulator.entities.TuringMachine;
+import com.hubosm.turingsimulator.exceptions.AccessDeniedException;
 import com.hubosm.turingsimulator.exceptions.ElementNotFoundException;
 import com.hubosm.turingsimulator.exceptions.IntegrityException;
 import com.hubosm.turingsimulator.mappers.TuringMachineMapper;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,8 +110,15 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
-    public void deleteTuringMachine(Long id) throws Exception {
-        if(!turingMachineRepository.existsById(id)) throw new ElementNotFoundException("Turing machine not found");
+    public void deleteTuringMachine(Long id , Long requestSenderId) throws Exception {
+
+        System.out.println("id: " + id + " :  req id:" + requestSenderId );
+        TuringMachine entity = turingMachineRepository
+                .findById(id)
+                .orElseThrow(() -> new ElementNotFoundException("Turing machine not found"));
+        if(!entity.getAuthor().getId().equals(requestSenderId)){
+            throw new AccessDeniedException("Unauthorized user");
+        }
         turingMachineRepository.deleteById(id);
     }
 

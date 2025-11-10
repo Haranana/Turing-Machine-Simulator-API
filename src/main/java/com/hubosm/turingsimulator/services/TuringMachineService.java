@@ -17,7 +17,7 @@ public interface TuringMachineService {
 
     TuringMachineReturnDto editTuringMachine(TuringMachineEditDto dto) throws Exception;
 
-    void deleteTuringMachine(Long id) throws Exception;
+    void deleteTuringMachine(Long id ,Long requestSenderId) throws Exception;
 
     TuringMachineReturnDto addTuringMachine(TuringMachineCreateDto dto, Long authorId) throws Exception;
 }
