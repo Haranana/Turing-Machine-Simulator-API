@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,12 +32,13 @@ public class TuringMachineServiceImpl implements TuringMachineService{
         return turingMachineMapper.EntityToReturnDto(entity);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TuringMachineReturnDto> getTuringMachinesByUserId(Long id, Pageable pageable) {
-        List<TuringMachineReturnDto> returnDtosList = turingMachineRepository.findAllByAuthor_Id(id, pageable).getContent()
+        Page<TuringMachine> page = turingMachineRepository.findAllByAuthor_Id(id, pageable);
+        List<TuringMachineReturnDto> content = page.getContent()
                 .stream().map(turingMachineMapper::EntityToReturnDto).toList();
-
-        return new PageImpl<>(returnDtosList);
+        return new PageImpl<>(content, page.getPageable(), page.getTotalElements());
     }
 
     @Override
@@ -87,6 +88,15 @@ public class TuringMachineServiceImpl implements TuringMachineService{
         if (dto.getSep2() != null) {
             entity.setSep2(dto.getSep2().trim());
         }
+        if (dto.getMoveRight() != null) {
+            entity.setMoveRight(dto.getMoveRight().trim());
+        }
+        if (dto.getMoveLeft() != null) {
+            entity.setMoveLeft(dto.getMoveLeft().trim());
+        }
+        if (dto.getMoveStay() != null) {
+            entity.setMoveStay(dto.getMoveStay().trim());
+        }
 
         if (dto.getTapesAmount() != null) {
             Integer ta = dto.getTapesAmount();
@@ -104,17 +114,17 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
-    public TuringMachineReturnDto addTuringMachine(TuringMachineCreateDto dto) throws Exception{
+    public TuringMachineReturnDto addTuringMachine(TuringMachineCreateDto dto, Long authorId) throws Exception{
 
-        if(!userRepository.existsById(dto.getAuthorId())) throw new ElementNotFoundException("User not found");
+        if(!userRepository.existsById(authorId)) throw new ElementNotFoundException("User not found");
         if (dto.getName() != null) {
             boolean taken = turingMachineRepository
-                    .existsByAuthorIdAndName(dto.getAuthorId(), dto.getName().trim());
+                    .existsByAuthorIdAndName(authorId, dto.getName().trim());
             if (taken) {
                 throw new IntegrityException("Machine with this name already exists");
             }
 
         }
-        return turingMachineMapper.EntityToReturnDto(turingMachineRepository.save(turingMachineMapper.CreateDtoToEntity(dto)));
+        return turingMachineMapper.EntityToReturnDto(turingMachineRepository.save(turingMachineMapper.CreateDtoToEntity(dto, authorId)));
     }
 }

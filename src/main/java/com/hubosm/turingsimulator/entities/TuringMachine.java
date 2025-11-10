@@ -56,6 +56,15 @@ public class TuringMachine {
     @Column(name = "sep2", nullable = false, length = 10)
     private String sep2;
 
+    @Column(name ="move_right" , nullable = false, length = 10)
+    private String moveRight;
+
+    @Column(name ="move_left" , nullable = false, length = 10)
+    private String moveLeft;
+
+    @Column(name ="move_stay" , nullable = false, length = 10)
+    private String moveStay;
+
     @Column(name = "tapes_amount", nullable = false)
     @Min(1)
     private Integer tapesAmount;

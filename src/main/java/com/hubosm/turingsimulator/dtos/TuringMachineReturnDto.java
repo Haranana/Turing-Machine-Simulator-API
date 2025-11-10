@@ -23,6 +23,9 @@ public class TuringMachineReturnDto {
     private String blank;
     private String sep1;
     private String sep2;
+    private String moveRight;
+    private String moveLeft;
+    private String moveStay;
 
     private Integer tapesAmount;
 

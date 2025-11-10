@@ -1,6 +1,7 @@
 package com.hubosm.turingsimulator.dtos;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -37,6 +38,15 @@ public class TuringMachineEditDto {
 
     @Size(max = 10)
     private String sep2;
+
+    @Size(max = 10)
+    private String moveRight;
+
+    @Size(max = 10)
+    private String moveLeft;
+
+    @Size(max = 10)
+    private String moveStay;
 
     @Min(1)
     private Integer tapesAmount;

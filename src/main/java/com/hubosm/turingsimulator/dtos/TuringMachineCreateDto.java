@@ -9,9 +9,6 @@ import lombok.*;
 @Builder
 public class TuringMachineCreateDto {
 
-    @NotNull
-    private Long authorId;
-
     @NotBlank
     @Size(max = 30)
     private String name;
@@ -42,6 +39,18 @@ public class TuringMachineCreateDto {
     @NotBlank
     @Size(max = 10)
     private String sep2;
+
+    @NotBlank
+    @Size(max = 10)
+    private String moveRight;
+
+    @NotBlank
+    @Size(max = 10)
+    private String moveLeft;
+
+    @NotBlank
+    @Size(max = 10)
+    private String moveStay;
 
     @NotNull
     @Min(1)

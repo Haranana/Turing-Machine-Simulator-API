@@ -1,6 +1,7 @@
 package com.hubosm.turingsimulator.controllers;
 
 import com.hubosm.turingsimulator.dtos.*;
+import com.hubosm.turingsimulator.entities.User;
 import com.hubosm.turingsimulator.services.TuringMachineService;
 import com.hubosm.turingsimulator.services.TuringMachineServiceImpl;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +23,9 @@ public class TuringMachineController {
     private final TuringMachineService turingMachineService;
 
     @PostMapping
-    public ResponseEntity<TuringMachineReturnDto> add(@Valid @RequestBody TuringMachineCreateDto dto) throws Exception {
-        TuringMachineReturnDto returnDto = turingMachineService.addTuringMachine(dto);
+    public ResponseEntity<TuringMachineReturnDto> add(@Valid @RequestBody TuringMachineCreateDto dto,
+    @AuthenticationPrincipal User principal) throws Exception {
+        TuringMachineReturnDto returnDto = turingMachineService.addTuringMachine(dto, principal.getId());
         return ResponseEntity.status(HttpStatus.CREATED).
                 header("Location", "/api/tm/" + returnDto.getId()).
                 body(returnDto);
@@ -49,9 +52,11 @@ public class TuringMachineController {
 
     @GetMapping
     public ResponseEntity<Page<TuringMachineReturnDto>> getByAuthor(
-            @RequestParam Long authorId,
+            @AuthenticationPrincipal User principal,
             @PageableDefault(size = 50) Pageable pageable) {
-        Page<TuringMachineReturnDto> returnDtoPage = turingMachineService.getTuringMachinesByUserId(authorId, pageable);
+        System.out.println(principal +  " : " + pageable);
+        Page<TuringMachineReturnDto> returnDtoPage = turingMachineService.getTuringMachinesByUserId(principal.getId(), pageable);
+
         return ResponseEntity.ok(returnDtoPage);
     }
 
