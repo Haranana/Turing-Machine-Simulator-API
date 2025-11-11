@@ -2,8 +2,10 @@ package com.hubosm.turingsimulator.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
+
 
 public record State(String name) {
     @Override
@@ -18,4 +20,5 @@ public record State(String name) {
     public String toString() {
         return name;
     }
+
 }

@@ -5,23 +5,20 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.Collection;
+import java.util.List;
 
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @Setter @ToString
+@AllArgsConstructor @NoArgsConstructor
 public class SimulationCreateDto {
-    @NotBlank
-    private String initialState;
-    @NotBlank
-    private String acceptState;
-    @NotBlank
-    private String rejectState;
-    private Collection<String> program;
-    @NotNull
-    private Character separator;
-    @NotNull
-    private String blank;
-    private String input;
+    @NotBlank private String initialState;
+    @NotBlank private String acceptState;
+    @NotBlank private String rejectState;
+
+    @NotNull  private Collection<String> program;
+    @NotBlank private String sep1;
+    @NotBlank private String sep2;
+    @NotBlank private String blank;
+
+    @NotNull  private List<String> input;
+    @NotNull  private Integer tapesAmount;
 }
