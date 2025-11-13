@@ -5,6 +5,7 @@ import com.hubosm.turingsimulator.dtos.TuringMachineEditDto;
 import com.hubosm.turingsimulator.dtos.TuringMachineReturnDto;
 import com.hubosm.turingsimulator.entities.TuringMachine;
 import com.hubosm.turingsimulator.exceptions.AccessDeniedException;
+import com.hubosm.turingsimulator.exceptions.DuplicateTmNameException;
 import com.hubosm.turingsimulator.exceptions.ElementNotFoundException;
 import com.hubosm.turingsimulator.exceptions.IntegrityException;
 import com.hubosm.turingsimulator.mappers.TuringMachineMapper;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,18 +46,20 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
-    public TuringMachineReturnDto editTuringMachine(TuringMachineEditDto dto) throws Exception {
+    public TuringMachineReturnDto editTuringMachine(TuringMachineEditDto dto, Long requestSenderId) throws Exception {
         TuringMachine entity = turingMachineRepository
                 .findById(dto.getId())
                 .orElseThrow(() -> new ElementNotFoundException("Turing machine not found"));
-
+        if(!entity.getAuthor().getId().equals(requestSenderId)){
+            throw new AccessDeniedException("Unauthorized user");
+        }
 
         if (dto.getName() != null) {
             String newName = dto.getName().trim();
-            boolean taken = turingMachineRepository
-                    .existsByAuthorIdAndNameAndIdNot(entity.getAuthor().getId(), newName, entity.getId());
-            if (taken) {
-                throw new IntegrityException("Machine with this name already exists");
+            Optional<TuringMachine> taken = turingMachineRepository
+                    .findByAuthorIdAndNameAndIdNot(entity.getAuthor().getId(), newName, entity.getId());
+            if (taken.isPresent()) {
+                throw new DuplicateTmNameException(taken.get().getId(), taken.get().getName());
             }
             entity.setName(newName);
         }
@@ -127,13 +131,19 @@ public class TuringMachineServiceImpl implements TuringMachineService{
 
         if(!userRepository.existsById(authorId)) throw new ElementNotFoundException("User not found");
         if (dto.getName() != null) {
-            boolean taken = turingMachineRepository
-                    .existsByAuthorIdAndName(authorId, dto.getName().trim());
-            if (taken) {
-                throw new IntegrityException("Machine with this name already exists");
+            Optional<TuringMachine> taken = turingMachineRepository
+                    .findByNameAndAuthor_Id(dto.getName().trim(), authorId);
+            if (taken.isPresent()) {
+                throw new DuplicateTmNameException(taken.get().getId() , taken.get().getName());
             }
-
         }
         return turingMachineMapper.EntityToReturnDto(turingMachineRepository.save(turingMachineMapper.CreateDtoToEntity(dto, authorId)));
+    }
+
+    @Override
+    public Optional<TuringMachineReturnDto> existsByNameAndAuthor(String turingMachineName, Long authorId){
+        Optional<TuringMachine> foundTm = turingMachineRepository.findByNameAndAuthor_Id(turingMachineName, authorId);
+
+        return foundTm.map(turingMachineMapper::EntityToReturnDto);
     }
 }

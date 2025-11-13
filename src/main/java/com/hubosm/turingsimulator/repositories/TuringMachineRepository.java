@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface TuringMachineRepository extends JpaRepository<TuringMachine, Long> {
     boolean existsByAuthorIdAndNameAndIdNot(Long authorId, String name, Long id);
+    Optional<TuringMachine> findByAuthorIdAndNameAndIdNot(Long authorId, String name, Long id);
     boolean existsByAuthorIdAndName(Long authorId, String name);
     Optional<TuringMachine> findByNameAndAuthor_Id(String name, Long authorId);
     List<TuringMachine> findAllByAuthor_Id(Long authorId);

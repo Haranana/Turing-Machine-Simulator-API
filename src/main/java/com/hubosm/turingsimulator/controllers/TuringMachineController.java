@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tm")
@@ -31,10 +32,10 @@ public class TuringMachineController {
                 body(returnDto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TuringMachineReturnDto> edit(@PathVariable Long id, @Valid @RequestBody TuringMachineEditDto dto) throws Exception{
-        dto.setId(id);
-        TuringMachineReturnDto returnDto = turingMachineService.editTuringMachine(dto);
+    @PutMapping
+    public ResponseEntity<TuringMachineReturnDto> edit(@Valid @RequestBody TuringMachineEditDto dto,
+                                                       @AuthenticationPrincipal User principal) throws Exception{
+        TuringMachineReturnDto returnDto = turingMachineService.editTuringMachine(dto, principal.getId());
         return ResponseEntity.ok(returnDto);
     }
 
@@ -50,6 +51,17 @@ public class TuringMachineController {
     public ResponseEntity<TuringMachineReturnDto> getOne(@PathVariable Long id) throws Exception {
         TuringMachineReturnDto returnDto = turingMachineService.getTuringMachine(id);
         return ResponseEntity.ok(returnDto);
+    }
+
+    @GetMapping("/exists/{name}")
+    public ResponseEntity<Optional<TuringMachineReturnDto>> exists(@AuthenticationPrincipal User principal,
+                                          @PathVariable String tmName) throws Exception{
+        Optional<TuringMachineReturnDto> result = turingMachineService.existsByNameAndAuthor(tmName, principal.getId());
+        if(result.isPresent()){
+            return ResponseEntity.ok(result);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        }
     }
 
     @GetMapping

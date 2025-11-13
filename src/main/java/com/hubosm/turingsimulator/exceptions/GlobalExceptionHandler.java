@@ -1,12 +1,17 @@
 package com.hubosm.turingsimulator.exceptions;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.parsing.Problem;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.net.URI;
 import java.util.HashMap;
 
 @RestControllerAdvice
@@ -66,6 +71,20 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
         problemDetail.setProperty("validationErrors", errors);
         return problemDetail;
+    }
+
+    //DuplicateTmNameException returns ResponseEntity,
+    // for app to suggest overwritting existing tm
+    @ExceptionHandler(DuplicateTmNameException.class)
+    public ProblemDetail onDuplicate(DuplicateTmNameException ex, HttpServletRequest req) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        pd.setTitle("Duplicate machine name");
+        pd.setDetail(ex.getMessage());
+        pd.setInstance(URI.create(req.getRequestURI()));
+        pd.setProperty("reason", "DUPLICATE_NAME");
+        pd.setProperty("existingId", ex.getExistingId());
+        pd.setProperty("name", ex.getName());
+        return pd;
     }
 
     @ExceptionHandler(Exception.class)
