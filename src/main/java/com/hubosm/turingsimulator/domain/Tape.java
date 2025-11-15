@@ -17,6 +17,46 @@ public class Tape {
         head = new TapeCell(blank);
     }
 
+    public Tape(Tape other) {
+        this.blank = other.blank;
+
+        if (other.head == null) {
+            this.head = null;
+            return;
+        }
+
+
+        TapeCell otherLeft = other.head;
+        while (otherLeft.leftCell != null) {
+            otherLeft = otherLeft.leftCell;
+        }
+
+        TapeCell newLeft = new TapeCell(otherLeft.value);
+        TapeCell currentOther = otherLeft;
+        TapeCell currentNew   = newLeft;
+
+
+        TapeCell newHeadRef = (currentOther == other.head) ? currentNew : null;
+
+
+        while (currentOther.rightCell != null) {
+            currentOther = currentOther.rightCell;
+
+            TapeCell nextNew = new TapeCell(currentOther.value);
+            currentNew.rightCell = nextNew;
+            nextNew.leftCell = currentNew;
+
+            currentNew = nextNew;
+
+            if (currentOther == other.head) {
+                newHeadRef = currentNew;
+            }
+        }
+
+
+        this.head = newHeadRef;
+    }
+
     public void moveHeadRight(){
         if(head.rightCell == null){
             head.rightCell = new TapeCell(blank);

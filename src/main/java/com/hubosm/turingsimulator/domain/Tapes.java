@@ -1,6 +1,7 @@
 package com.hubosm.turingsimulator.domain;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Tapes {
@@ -8,6 +9,12 @@ public class Tapes {
 
     public Tapes(int n, String blank) {
         this.tapes = IntStream.range(0, n).mapToObj(i -> new Tape(blank)).toList();
+    }
+
+    public Tapes(Tapes other) {
+        this.tapes = other.tapes.stream()
+                .map(Tape::new)
+                .collect(Collectors.toList());
     }
     public void placeInputs(List<String> inputs){
         for (int i=0;i<tapes.size();i++) tapes.get(i).placeText(inputs.get(i));

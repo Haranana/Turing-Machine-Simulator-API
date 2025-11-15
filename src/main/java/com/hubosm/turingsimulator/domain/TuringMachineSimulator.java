@@ -60,7 +60,10 @@ public class TuringMachineSimulator {
 
         SimulationReturnDto out = new SimulationReturnDto();
         out.steps = new ArrayList<>();
-        for (int i = 0; i < tapesAmount; i++) out.steps.add(new ArrayList<>());
+
+        //System.out.println(out.steps);
+        for (int i = 0; i < tapesAmount; i++)
+            out.steps.add(new ArrayList<>());
 
         State cur = initialState;
         int step = 0;
@@ -70,35 +73,34 @@ public class TuringMachineSimulator {
             step++;
 
             TapeState[] before = new TapeState[tapesAmount];
-            for (int i=0;i<tapesAmount;i++) before[i] = tapes.get(i).ToTapeState(true);
+            for (int i=0;i<tapesAmount;i++)
+                before[i] = tapes.get(i).ToTapeState(true);
 
             char[] rc = tapes.readHeads();
             String[] reads = new String[tapesAmount];
-            for (int i=0;i<tapesAmount;i++) reads[i] = String.valueOf(rc[i]);
+            for (int i=0;i<tapesAmount;i++)
+                reads[i] = String.valueOf(rc[i]);
 
             State finalCur = cur;
-            MultiTransition tr = program.get(cur, reads)
-                    .orElseThrow(() -> new RuntimeException(
-                            "No transition for state=" + finalCur.name()
-                                    + " reads=" + String.join(",", reads)));
+            MultiTransition tr = program.get(cur, reads).orElseThrow(() -> new RuntimeException(
+                            "No transition for state=" + finalCur.name() + " reads=" + String.join(",", reads)));
 
             for (int i=0;i<tapesAmount;i++){
                 String write = tr.getWrite()[i];
                 tapes.get(i).writeOnHead(write);
                 switch (tr.getActions()[i]) {
+
                     case LEFT  -> tapes.get(i).moveHeadLeft();
                     case RIGHT -> tapes.get(i).moveHeadRight();
                     case STAY  -> {}
                 }
-                out.steps.get(i).add(new FullSimulationStep(
-                        i, tr.getActions()[i],
+                out.steps.get(i).add(new FullSimulationStep(i, tr.getActions()[i],
                         reads[i], write,
                         new State(cur.name()),
                         new State(tr.getNextState().name()),
                         before[i]
                 ));
             }
-
             cur = tr.getNextState();
         }
 
@@ -115,6 +117,8 @@ public class TuringMachineSimulator {
         if (halves.length != 2) throw new RuntimeException("Bad transition (sep2): " + line);
 
         String[] L = halves[0].split(s1, -1);
+
+
         String[] R = halves[1].split(s1, -1);
 
         if (L.length != 1 + tapes) throw new RuntimeException("Bad left arity: " + line);
@@ -123,12 +127,14 @@ public class TuringMachineSimulator {
         State cur = new State(L[0]);
 
         String[] reads = new String[tapes];
-        for (int i=0;i<tapes;i++) reads[i] = L[1+i];
+        for (int i=0;i<tapes;i++)
+            reads[i] = L[1+i];
 
         State next = new State(R[0]);
 
         String[] writes = new String[tapes];
-        for (int i=0;i<tapes;i++) writes[i] = R[1+i];
+        for (int i=0;i<tapes;i++)
+            writes[i] = R[1+i];
 
         MultiTransition.TransitionAction[] actions = new MultiTransition.TransitionAction[tapes];
         for (int i=0;i<tapes;i++) {

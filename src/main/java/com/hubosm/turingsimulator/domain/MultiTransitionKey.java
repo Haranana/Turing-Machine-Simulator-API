@@ -10,5 +10,7 @@ import java.util.List;
 public class MultiTransitionKey {
     private final String state;
     private final List<String> reads;
-    static MultiTransitionKey of(State s, String[] reads){ return new MultiTransitionKey(s.name(), List.of(reads)); }
+    public static MultiTransitionKey of(State s, String[] reads){
+        return new MultiTransitionKey(s.name(), List.of(reads));
+    }
 }
