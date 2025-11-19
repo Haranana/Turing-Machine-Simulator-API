@@ -2,6 +2,8 @@ package com.hubosm.turingsimulator.domain.Nondeterministic;
 
 import com.hubosm.turingsimulator.domain.*;
 import com.hubosm.turingsimulator.dtos.NdTmReturnDto;
+import com.hubosm.turingsimulator.dtos.NonDetSimulationDto;
+import com.hubosm.turingsimulator.utils.Pair;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -72,6 +74,7 @@ public class NdTmSimulator {
     }
 
     private void addFirstimulationStep(NdTmReturnDto out, NdTreeEdge curEdge, MultiTransition transition){
+        long stepId = 0L;
         for (int i=0;i<tapesAmount;i++) {
             MultiTransition.TransitionAction action = transition.getActions()[i];
             String read = transition.getRead()[i];
@@ -86,12 +89,17 @@ public class NdTmSimulator {
                 case STAY -> {}
             }
 
-            NdTmStep step = new NdTmStep(i, 0L, action, read, write, this.initialState, stateAfter, tapeStateBefore);
+            NdTmStep step = new NdTmStep(i, stepId, action, read, write, this.initialState, stateAfter, tapeStateBefore);
+            System.out.println("cur edge: " + curEdge);
+            System.out.println("cur edge [i]: " + curEdge.getSteps().get(i));
             curEdge.getSteps().get(i).add(step);
+            System.out.println("after edge");
         }
     }
 
-    private void addSimulationStep(NdTmReturnDto out, NdTreeEdge curEdge, MultiTransition transition){
+    private void addSimulationStep(NdTmReturnDto out, NdTreeEdge curEdge, MultiTransition transition, State stateBefore){
+
+        long stepId = curEdge.getSteps().get(0).size();
         for (int i=0;i<tapesAmount;i++) {
             MultiTransition.TransitionAction action = transition.getActions()[i];
             String read = transition.getRead()[i];
@@ -106,7 +114,7 @@ public class NdTmSimulator {
                 case STAY -> {}
             }
 
-            NdTmStep step = new NdTmStep(i, 0L, action, read, write, this.initialState, stateAfter, tapeState);
+            NdTmStep step = new NdTmStep(i, stepId, action, read, write, stateBefore, stateAfter, tapeState);
             curEdge.getSteps().get(i).add(step);
         }
     }
@@ -124,15 +132,17 @@ public class NdTmSimulator {
         for (MultiTransition multiTransition : transitionList) {
 
             //IDs assignment
-            NdTreeEdge newEdge = new NdTreeEdge((long) out.getEdgeList().size());
+            NdTreeEdge newEdge = new NdTreeEdge((long) out.getEdgeList().size(), tapesAmount);
             newNode.getEdgeIds().add(newEdge.getId());
             newEdge.setStartNodeId(newNode.getId());
             addedQueuesIds.add(Math.toIntExact(newEdge.getId()));
+            out.getEdgeList().add(newEdge);
 
             //Create new Tapes object for new edge
             this.tapes.add(new Tapes(this.tapesAmount, this.blank));
-            this.tapes.getFirst().placeInputs(inputs);
-            newEdge.setTapesId(tapes.size()-1);
+            int tapesIndex = this.tapes.size() - 1;
+            this.tapes.get(tapesIndex).placeInputs(inputs);
+            newEdge.setTapesId(tapesIndex);
 
             addFirstimulationStep(out, newEdge, multiTransition);
         }
@@ -148,7 +158,7 @@ public class NdTmSimulator {
 
     }
 
-    private List<Integer> createNode(NdTmReturnDto out, NdTreeEdge currentEdge, List<MultiTransition> transitionList){
+    private List<Integer> createNode(NdTmReturnDto out, NdTreeEdge currentEdge, List<MultiTransition> transitionList, State stateBefore){
         List<Integer> addedQueuesIds = new ArrayList<>();
 
         //create new node
@@ -160,51 +170,83 @@ public class NdTmSimulator {
         for (MultiTransition multiTransition : transitionList) {
 
             //IDs assignment
-            NdTreeEdge newEdge = new NdTreeEdge((long) out.getEdgeList().size());
+            NdTreeEdge newEdge = new NdTreeEdge((long) out.getEdgeList().size(), tapesAmount);
             newNode.getEdgeIds().add(newEdge.getId());
             newEdge.setStartNodeId(newNode.getId());
             addedQueuesIds.add(Math.toIntExact(newEdge.getId()));
+            out.getEdgeList().add(newEdge);
 
             //Create new Tapes object for new edge
             this.tapes.add( new Tapes(tapes.get(currentEdge.getTapesId())) );
             newEdge.setTapesId(tapes.size()-1);
 
-            addSimulationStep(out, newEdge, multiTransition);
+            addSimulationStep(out, newEdge, multiTransition, stateBefore);
         }
 
         return addedQueuesIds;
     }
 
-    private NdTmReturnDto runSimulation(List<String> inputs){
+    //creates root and first branch(es) to put on queue
+    private List<Integer> startSimulation(NdTmReturnDto out ,Tapes startingTapes, State startingState, List<String> inputs){
 
+        char[] rc = startingTapes.readHeads();
+        String[] readCharactes = new String[tapesAmount];
+        for (int i=0;i<tapesAmount;i++)
+            readCharactes[i] = String.valueOf(rc[i]);
+
+        List<MultiTransition> tr = program.get(startingState, readCharactes).orElseThrow(() -> new RuntimeException(
+                "No transition for state=" + startingState.name() + " reads=" + String.join(",", readCharactes)));
+
+        if(tr.isEmpty()){
+            throw new RuntimeException(
+                    "No transition for state=" + startingState.name() + " reads=" + String.join(",", readCharactes));
+        }
+
+        System.out.println("transition: " + tr.get(0));
+        return createRoot(out, tr, inputs);
+    }
+
+    //TODO, when step limit is reached simulation will leaf only current branch
+    //TODO also gloabalStepCounter adds step only on simple branch addition not on node creation, FIX IT!!!!!
+
+    public NdTmReturnDto runSimulation(List<String> inputs){
+
+        //create dto, prepare function range values
         NdTmReturnDto out = new NdTmReturnDto();
-        Queue<Long> simulationQueue = new ArrayDeque<>();
         final int maxSteps = SimulationConfig.maxSteps;
-        NdTreeEdge currentEdge = null;
-
-        Tapes startingTape = new Tapes(tapesAmount, blank);
-        State currentState = initialState;
-        startingTape.placeInputs(inputs);
         int globalStepCounter = 0;
 
-        do {
-            Long currentEdgeId = simulationQueue.poll();
-            currentEdge = currentEdgeId == null? null : out.getEdgeList().get(Math.toIntExact(currentEdgeId));
+        //prepare starting tape
+        Tapes startingTape = new Tapes(tapesAmount, blank);
+        startingTape.placeInputs(inputs);
+
+        //create root and first branches to work on
+        List<Integer> startingBranchesIds = startSimulation(out, startingTape, initialState, inputs);
+        Queue<Integer> simulationQueue = new ArrayDeque<>(startingBranchesIds);
+
+        while (!simulationQueue.isEmpty()){
+
+            int currentEdgeId = simulationQueue.poll();
+            NdTreeEdge currentEdge = out.getEdgeList().get(currentEdgeId);
+
+            //current state is state after previous step
+            State currentState = currentEdge.getSteps().get(0).get(currentEdge.getSteps().get(0).size()-1).stateAfter();
 
             char[] rc;
-            if(currentEdge == null){
-                rc = startingTape.readHeads();
-            }else{
-                rc = tapes.get(currentEdge.getTapesId()).readHeads();
-            }
-            String[] readCharactes = new String[tapesAmount];
+            rc = tapes.get(currentEdge.getTapesId()).readHeads();
+            String[] readCharacters = new String[tapesAmount];
             for (int i=0;i<tapesAmount;i++)
-                readCharactes[i] = String.valueOf(rc[i]);
+                readCharacters[i] = String.valueOf(rc[i]);
 
+
+            if(currentState.equals(acceptState) || currentState.equals(rejectState)){
+                createLeaf(out, currentEdge);
+                continue;
+            }
             //try to find full transition(s) given the left side
             State finalCurrentState = currentState;
-            List<MultiTransition> tr = program.get(currentState, readCharactes).orElseThrow(() -> new RuntimeException(
-                    "No transition for state=" + finalCurrentState.name() + " reads=" + String.join(",", readCharactes)));
+            List<MultiTransition> tr = program.get(currentState, readCharacters).orElseThrow(() -> new RuntimeException(
+                    "No transition for state=" + finalCurrentState.name() + " reads=" + String.join(",", readCharacters)));
 
             /*
             - if no transition is find - exception
@@ -218,34 +260,115 @@ public class NdTmSimulator {
 
             if(tr.isEmpty()){
                 throw new RuntimeException(
-                        "No transition for state=" + currentState.name() + " reads=" + String.join(",", readCharactes));
+                        "No transition for state=" + currentState.name() + " reads=" + String.join(",", readCharacters));
             }
-            else if(out.getNodeList().isEmpty() || currentEdge == null){
-               List<Integer> edgesToAdd = createRoot(out, tr, inputs);
-               edgesToAdd.forEach((edgeId)->{
-                   simulationQueue.add(Long.valueOf(edgeId));
-               });
-            }else if(globalStepCounter >= maxSteps ){
+            else if(globalStepCounter >= maxSteps ){
                 createLeaf(out, currentEdge);
                 simulationQueue.clear();
                 break;
-            }else if(currentState.equals(acceptState) || currentState.equals(rejectState)){
-                createLeaf(out, currentEdge);
             }
             else if(tr.size() == 1){
-                addSimulationStep(out, currentEdge, tr.getFirst());
+                System.out.println("transition: " + tr.get(0));
+                addSimulationStep(out, currentEdge, tr.get(0), currentState);
                 globalStepCounter+=1;
+                simulationQueue.add(currentEdgeId);
             }else {
-                List<Integer> edgesToAdd = createNode(out, currentEdge, tr);
-                edgesToAdd.forEach((edgeId) -> {
-                    simulationQueue.add(Long.valueOf(edgeId));
-                });
+                List<Integer> edgesToAdd = createNode(out, currentEdge, tr, currentState);
+                simulationQueue.addAll(edgesToAdd);
+            }
+        }
+        return out;
+    }
+
+    public NonDetSimulationDto createSimulation(List<String> inputs){
+        //create dto, prepare function range values
+        NonDetSimulationDto out = new NonDetSimulationDto();
+        final int maxSteps = SimulationConfig.maxSteps;
+
+        //prepare starting tape
+        Tapes startingTape = new Tapes(tapesAmount, blank);
+        startingTape.placeInputs(inputs);
+
+        //queue stores nodeId and Tapes Object for this nodeId
+        Queue<Pair<Integer, Tapes>> simulationQueue = new ArrayDeque<>();
+        out.getNodes().put(0, new SimulationNode(0));
+        simulationQueue.add(new Pair<>(0, startingTape));
+        State currentState = initialState;
+
+        while (!simulationQueue.isEmpty()){
+
+            if(out.getNodes().size() > maxSteps){
+                simulationQueue.clear();
+                break;
             }
 
-            currentState = currentEdge.getSteps().getFirst().getLast().stateAfter();
+            //get data from queue
+            Pair<Integer, Tapes> simulationElement = simulationQueue.poll();
+            int currentNodeId = simulationElement.key();
+            Tapes currentTapes = simulationElement.value();
+            Integer previousNodeId = out.getNodes().get(currentNodeId).getPrevId();
+
+            //prepare state and read heads for finding transitions
+            if(previousNodeId == null){
+                currentState = initialState;
+            }else{
+                currentState = out.getNodes().get(previousNodeId).getStep().getFirst().stateAfter();
+            }
+
+            if(currentState == acceptState || currentState == rejectState){
+                continue;
+            }
+
+            //read characters on heads
+            char[] rc;
+            rc = currentTapes.readHeads();
+            String[] readCharacters = new String[tapesAmount];
+            for (int i=0;i<tapesAmount;i++)
+                readCharacters[i] = String.valueOf(rc[i]);
+
+            //try to find full transition(s) given the left side
+            State finalCurrentState = currentState;
+            List<MultiTransition> tr = program.get(currentState, readCharacters).orElseThrow(() -> new RuntimeException(
+                    "No transition for state=" + finalCurrentState.name() + " reads=" + String.join(",", readCharacters)));
+
+            //for each transition a node is created alongside with tape after move specified in transition
+            //newly created node has assigned previousID as id of current node
+            State finalCurrentState1 = currentState;
+            tr.forEach((transition)->{
+                final String[] writtenCharacters = transition.getWrite();
+                final MultiTransition.TransitionAction[] actions = transition.getActions();
+                final State nextState = transition.getNextState();
+
+                //create tape and node, add new node to map, add relation beetwen current and new node
+                Tapes newTapes = new Tapes(currentTapes);
+                SimulationNode newNode = new SimulationNode(out.getNodes().size());
+                out.getNodes().put(newNode.getId(), newNode);
+                newNode.setPrevId(currentNodeId);
+                out.getNodes().get(currentNodeId).getNextIds().add(newNode.getId());
 
 
-        }while (!simulationQueue.isEmpty());
+                List<FullSimulationStep> newNodeSimulationSteps = new ArrayList<>();
+                //update Tapes and collect eachTapeState
+                for(int tapeId = 0; tapeId < tapesAmount; tapeId++){
+                    TapeState tapeState = newTapes.get(tapeId).ToTapeState(true);
+                    newTapes.get(tapeId).writeOnHead(writtenCharacters[tapeId]);
+                    switch (actions[tapeId]) {
+                        case LEFT -> newTapes.get(tapeId).moveHeadLeft();
+                        case RIGHT -> newTapes.get(tapeId).moveHeadRight();
+                        case STAY -> {}
+                    }
+                    newNodeSimulationSteps.add(new FullSimulationStep(tapeId, actions[tapeId], readCharacters[tapeId], writtenCharacters[tapeId], finalCurrentState1, nextState, tapeState));
+                }
+                newNode.setStep(newNodeSimulationSteps);
+
+                simulationQueue.add(new Pair<>(newNode.getId(), newTapes));
+            });
+        }
+
+        //security, if there were no steps made (root is the only node), root also should be deleted
+        if(out.getNodes().size()==1 && out.getNodes().get(0).getNextIds().isEmpty()){
+            out.getNodes().clear();
+        }
         return out;
     }
 

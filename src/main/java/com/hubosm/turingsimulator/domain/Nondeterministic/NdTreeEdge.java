@@ -19,8 +19,11 @@ public class NdTreeEdge {
     private Long startNodeId;
     private Long endNodeId;
 
-    public NdTreeEdge(Long id){
+    public NdTreeEdge(Long id, int tapesAmount){
         steps = new ArrayList<>();
+        for(int i=0; i<tapesAmount; i++){
+            steps.add(new ArrayList<>());
+        }
         this.id = id;
     }
 }

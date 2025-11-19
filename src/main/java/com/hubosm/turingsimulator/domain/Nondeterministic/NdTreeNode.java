@@ -16,6 +16,4 @@ public class NdTreeNode {
         edgeIds = new ArrayList<>();
         this.id = id;
     }
-
-
 }

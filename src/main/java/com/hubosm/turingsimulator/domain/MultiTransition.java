@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -28,5 +30,15 @@ public class MultiTransition {
         RIGHT,
         LEFT,
         STAY
+    }
+
+    @Override
+    public String toString() {
+        return "[" + currentState +
+                ", " + Arrays.toString(read) +
+                " => " + nextState +
+                ", " + Arrays.toString(write) +
+                ", " + Arrays.toString(actions) +
+                ']';
     }
 }
