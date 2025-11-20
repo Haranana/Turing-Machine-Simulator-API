@@ -306,16 +306,15 @@ public class NdTmSimulator {
             Pair<Integer, Tapes> simulationElement = simulationQueue.poll();
             int currentNodeId = simulationElement.key();
             Tapes currentTapes = simulationElement.value();
-            Integer previousNodeId = out.getNodes().get(currentNodeId).getPrevId();
+            SimulationNode currentNode = out.getNodes().get(currentNodeId);
 
-            //prepare state and read heads for finding transitions
-            if(previousNodeId == null){
+            if (currentNodeId == 0 || currentNode.getStep().isEmpty()) {
                 currentState = initialState;
-            }else{
-                currentState = out.getNodes().get(previousNodeId).getStep().getFirst().stateAfter();
+            } else {
+                currentState = currentNode.getStep().get(0).stateAfter();
             }
 
-            if(currentState == acceptState || currentState == rejectState){
+            if (currentState.equals(acceptState) || currentState.equals(rejectState)) {
                 continue;
             }
 

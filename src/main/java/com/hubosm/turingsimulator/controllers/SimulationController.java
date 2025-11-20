@@ -26,6 +26,7 @@ public class SimulationController {
     public ResponseEntity<NonDetSimulationDto> addNd(@Valid @RequestBody SimulationCreateDto dto){
         System.out.println("got dto in controller");
         NonDetSimulationDto outputDto = simulationService.runNdSimulation(dto);
+
         return ResponseEntity.accepted().body(outputDto);
     }
 }

@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface SimulationService {
 
     SimulationReturnDto runSimulation(SimulationCreateDto dto);
-    NdTmReturnDto runNdSimulation(SimulationCreateDto dto);
+    NonDetSimulationDto runNdSimulation(SimulationCreateDto dto);
 
 }
 
