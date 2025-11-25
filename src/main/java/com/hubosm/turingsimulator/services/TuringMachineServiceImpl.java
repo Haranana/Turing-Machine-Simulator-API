@@ -31,6 +31,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public TuringMachineReturnDto getTuringMachine(Long id) throws Exception {
         TuringMachine entity = turingMachineRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Turing machine not found"));
         return turingMachineMapper.EntityToReturnDto(entity);
@@ -46,6 +47,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
+    @Transactional
     public TuringMachineReturnDto editTuringMachine(TuringMachineEditDto dto, Long requestSenderId) throws Exception {
         TuringMachine entity = turingMachineRepository
                 .findById(dto.getId())
@@ -114,6 +116,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
+    @Transactional
     public void deleteTuringMachine(Long id , Long requestSenderId) throws Exception {
 
         System.out.println("id: " + id + " :  req id:" + requestSenderId );
@@ -127,6 +130,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
+    @Transactional
     public TuringMachineReturnDto addTuringMachine(TuringMachineCreateDto dto, Long authorId) throws Exception{
 
         if(!userRepository.existsById(authorId)) throw new ElementNotFoundException("User not found");
@@ -141,6 +145,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
+    @Transactional
     public Optional<TuringMachineReturnDto> existsByNameAndAuthor(String turingMachineName, Long authorId){
         Optional<TuringMachine> foundTm = turingMachineRepository.findByNameAndAuthor_Id(turingMachineName, authorId);
 
