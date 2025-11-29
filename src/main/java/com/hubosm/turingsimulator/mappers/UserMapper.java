@@ -4,12 +4,14 @@ import com.hubosm.turingsimulator.dtos.UserCreateDto;
 import com.hubosm.turingsimulator.dtos.UserEditDto;
 import com.hubosm.turingsimulator.dtos.UserReturnDto;
 import com.hubosm.turingsimulator.entities.User;
+import com.hubosm.turingsimulator.services.AuthServiceImpl;
 import com.hubosm.turingsimulator.services.SecurityService;
 import com.hubosm.turingsimulator.services.SecurityServiceImpl;
 import com.hubosm.turingsimulator.utils.AccountStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 @Component
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 public class UserMapper {
 
     final SecurityService securityService;
+    final AuthServiceImpl authService;
 
     public User CreateDtoToEntity(UserCreateDto dto){
 
@@ -25,6 +28,8 @@ public class UserMapper {
         user.setPasswordHash(securityService.encode(dto.getPassword()));
         user.setStatus(AccountStatus.NOT_ACTIVATED);
         user.setTuringMachines(new ArrayList<>());
+        user.setActivationToken(authService.generateActivationToken());
+        user.setActivationTokenExpiresAt(OffsetDateTime.now().plusDays(7));
         return user;
     }
 

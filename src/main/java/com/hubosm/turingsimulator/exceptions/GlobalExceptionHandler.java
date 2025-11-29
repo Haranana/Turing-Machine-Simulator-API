@@ -35,6 +35,15 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(ExpirationDatePassedException.class)
+    public ProblemDetail expirationDatePassed(ExpirationDatePassedException ex){
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.GONE);
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setTitle("Expiration date passed");
+        problemDetail.setProperty("errorCode", "ELEMENT_GONE");
+        return problemDetail;
+    }
+
     @ExceptionHandler(IntegrityException.class)
     public ProblemDetail integrityConflict(IntegrityException ex){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
@@ -53,16 +62,6 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    /*
-    @ExceptionHandler(ValidationException.class)
-    public ProblemDetail validationError(ValidationException ex){
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setDetail(ex.getMessage());
-        problemDetail.setTitle("Validation error");
-        problemDetail.setProperty("errorCode", "VALIDATION_ERROR");
-        return problemDetail;
-    }*/
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail validationError(MethodArgumentNotValidException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -70,6 +69,24 @@ public class GlobalExceptionHandler {
         HashMap<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(fe -> errors.put(fe.getField(), fe.getDefaultMessage()));
         problemDetail.setProperty("validationErrors", errors);
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AccountNotActiveException.class)
+    public ProblemDetail accountError(AccountNotActiveException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problemDetail.setTitle("Account is not active");
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setProperty("errorCode", "ACCOUNT_NOT_ACTIVE");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AccountActivationException.class)
+    public ProblemDetail activationError(AccountActivationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setTitle("Account activation error");
+        problemDetail.setProperty("errorCode", "ACCOUNT_ACTIVATION_ERROR");
         return problemDetail;
     }
 

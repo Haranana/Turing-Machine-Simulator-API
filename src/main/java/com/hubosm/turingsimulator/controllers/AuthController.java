@@ -4,15 +4,14 @@ import com.hubosm.turingsimulator.dtos.AuthResponseDto;
 import com.hubosm.turingsimulator.dtos.LoginRequestDto;
 import com.hubosm.turingsimulator.dtos.RegisterRequestDto;
 import com.hubosm.turingsimulator.dtos.UserCreateDto;
+import com.hubosm.turingsimulator.entities.User;
 import com.hubosm.turingsimulator.services.AuthServiceImpl;
 import com.hubosm.turingsimulator.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")

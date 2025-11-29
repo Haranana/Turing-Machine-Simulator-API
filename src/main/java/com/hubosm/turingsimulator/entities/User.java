@@ -47,6 +47,12 @@ public class User implements UserDetails {
     @Convert(converter = AccountStatusConverter.class)
     private AccountStatus status;
 
+    @Column(name = "activation_token", unique = true)
+    private String activationToken;
+
+    @Column(name = "activation_token_expires_at")
+    private OffsetDateTime activationTokenExpiresAt;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<TuringMachine> turingMachines = new ArrayList<>();
