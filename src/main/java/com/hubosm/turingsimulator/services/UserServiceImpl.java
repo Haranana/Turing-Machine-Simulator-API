@@ -1,12 +1,10 @@
 package com.hubosm.turingsimulator.services;
 
+import com.hubosm.turingsimulator.dtos.UserChangePasswordDto;
 import com.hubosm.turingsimulator.dtos.UserCreateDto;
 import com.hubosm.turingsimulator.dtos.UserReturnDto;
 import com.hubosm.turingsimulator.entities.User;
-import com.hubosm.turingsimulator.exceptions.AccountActivationException;
-import com.hubosm.turingsimulator.exceptions.AccountNotActiveException;
-import com.hubosm.turingsimulator.exceptions.ElementNotFoundException;
-import com.hubosm.turingsimulator.exceptions.ExpirationDatePassedException;
+import com.hubosm.turingsimulator.exceptions.*;
 import com.hubosm.turingsimulator.mappers.UserMapper;
 import com.hubosm.turingsimulator.repositories.UserRepository;
 import com.hubosm.turingsimulator.utils.AccountStatus;
@@ -23,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Optional;
 
 
 @Service
@@ -34,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final EmailServiceImpl emailService;
     private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    private final SecurityServiceImpl securityService;
 
     @Override
     public void createUser(UserCreateDto dto) throws Exception {
@@ -74,6 +74,41 @@ public class UserServiceImpl implements UserService {
         user.setStatus(AccountStatus.ACTIVE);
         user.setActivationToken(null);
         user.setActivationTokenExpiresAt(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void changePassword(UserChangePasswordDto dto, String token) throws Exception{
+        User user = userRepository.findByPasswordChangeToken(token).orElseThrow(()->new ElementNotFoundException("User not found"));
+
+        if(user.getPasswordChangeToken() == null || user.getPasswordChangeTokenExpiresAt() == null){
+            throw  new PasswordChangeException("Token doesn't exist");
+        }
+        if(user.getPasswordChangeTokenExpiresAt().isBefore(OffsetDateTime.now())){
+            throw new PasswordChangeException("Token expired");
+        }
+
+        user.setPasswordHash(securityService.encode(dto.getPassword()));
+        user.setPasswordChangeToken(null);
+        user.setPasswordChangeTokenExpiresAt(null);
+        userRepository.save(user);
+
+    }
+
+    @Override
+    public void addChangePasswordToken(String userEmail) throws Exception{
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+        if(userOptional.isEmpty()){
+            return;
+        }
+
+        User user = userOptional.get();
+        String token = securityService.generateSecureToken();
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusMinutes(30);
+
+        emailService.sendPasswordChangeMail(userEmail, token, expirationDate.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+        user.setPasswordChangeToken(token);
+        user.setPasswordChangeTokenExpiresAt(expirationDate);
         userRepository.save(user);
     }
 }

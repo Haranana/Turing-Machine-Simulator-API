@@ -1,5 +1,6 @@
 package com.hubosm.turingsimulator.dtos;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -7,14 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEditDto {
-
-    private Long id;
-
-    @Email
-    private String email;
-
+public class UserChangePasswordDto {
+    @NotBlank
     @Size(min = 8, max = 100)
     private String password;
-
 }

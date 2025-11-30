@@ -90,6 +90,15 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(PasswordChangeException.class)
+    public ProblemDetail passwordChangeError(PasswordChangeException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setTitle("Password change error");
+        problemDetail.setProperty("errorCode", "PASSWORD_CHANGE_ERROR");
+        return problemDetail;
+    }
+
     //DuplicateTmNameException returns ResponseEntity,
     // for app to suggest overwritting existing tm
     @ExceptionHandler(DuplicateTmNameException.class)

@@ -23,4 +23,13 @@ public class EmailServiceImpl implements EmailService{
         msg.setText("To activate your account please enter URL: " + appUrl+"activate?token="+  activationToken + "\nActivation link expires on: " + expirationDate);
         mailSender.send(msg);
     }
+
+    @Override
+    public void sendPasswordChangeMail(String userMail, String token, String expirationDate){
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(userMail);
+        msg.setSubject("Turing Machine Password change");
+        msg.setText("To change your password please enter URL: " + appUrl+"/password/change?token="+  token + "\nActivation link expires on: " + expirationDate);
+        mailSender.send(msg);
+    }
 }

@@ -53,6 +53,12 @@ public class User implements UserDetails {
     @Column(name = "activation_token_expires_at")
     private OffsetDateTime activationTokenExpiresAt;
 
+    @Column(name = "password_change_token", unique = true)
+    private String passwordChangeToken;
+
+    @Column(name = "password_change_token_expires_at")
+    private OffsetDateTime passwordChangeTokenExpiresAt;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<TuringMachine> turingMachines = new ArrayList<>();

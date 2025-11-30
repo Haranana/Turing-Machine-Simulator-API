@@ -1,7 +1,6 @@
 package com.hubosm.turingsimulator.mappers;
 
 import com.hubosm.turingsimulator.dtos.UserCreateDto;
-import com.hubosm.turingsimulator.dtos.UserEditDto;
 import com.hubosm.turingsimulator.dtos.UserReturnDto;
 import com.hubosm.turingsimulator.entities.User;
 import com.hubosm.turingsimulator.services.AuthServiceImpl;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 public class UserMapper {
 
     final SecurityService securityService;
-    final AuthServiceImpl authService;
 
     public User CreateDtoToEntity(UserCreateDto dto){
 
@@ -28,7 +26,7 @@ public class UserMapper {
         user.setPasswordHash(securityService.encode(dto.getPassword()));
         user.setStatus(AccountStatus.NOT_ACTIVATED);
         user.setTuringMachines(new ArrayList<>());
-        user.setActivationToken(authService.generateActivationToken());
+        user.setActivationToken(securityService.generateSecureToken());
         user.setActivationTokenExpiresAt(OffsetDateTime.now().plusDays(7));
         return user;
     }
