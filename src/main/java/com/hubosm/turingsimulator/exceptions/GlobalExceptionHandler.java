@@ -99,6 +99,16 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(DeleteAccountException.class)
+    public ProblemDetail accountDeletionError(DeleteAccountException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setTitle("Account deletion error");
+        problemDetail.setProperty("errorCode", "ACCOUNT_DELETION_ERROR");
+        return problemDetail;
+    }
+
+
     //DuplicateTmNameException returns ResponseEntity,
     // for app to suggest overwritting existing tm
     @ExceptionHandler(DuplicateTmNameException.class)

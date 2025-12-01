@@ -111,4 +111,31 @@ public class UserServiceImpl implements UserService {
         user.setPasswordChangeTokenExpiresAt(expirationDate);
         userRepository.save(user);
     }
+
+    @Override
+    public void addDeleteAccountToken(Long userId) throws Exception{
+        User user = userRepository.findById(userId).orElseThrow(()->new ElementNotFoundException("User not found"));
+
+        String token = securityService.generateSecureToken();
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusMinutes(30);
+
+        emailService.sendDeleteAccountMail(user.getEmail(), token, expirationDate.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+        user.setDeleteAccountToken(token);
+        user.setDeleteAccountTokenExpiresAt(expirationDate);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteAccount(String token) throws Exception{
+        User user = userRepository.findByDeleteAccountToken(token).orElseThrow(()->new ElementNotFoundException("Invalid token"));
+
+        if(user.getDeleteAccountTokenExpiresAt() == null){
+            throw new DeleteAccountException("Invalid token");
+        }
+        if(user.getDeleteAccountTokenExpiresAt().isBefore(OffsetDateTime.now())){
+            throw new DeleteAccountException("Token expired");
+        }
+
+        userRepository.delete(user);
+    }
 }

@@ -11,4 +11,6 @@ public interface UserService {
     void activateUserAccount(String activationToken) throws Exception;
     void changePassword(UserChangePasswordDto dto, String token) throws Exception;
     void addChangePasswordToken(String userEmail) throws Exception;
+    void addDeleteAccountToken(Long userId) throws Exception;
+    void deleteAccount(String token) throws Exception;
 }

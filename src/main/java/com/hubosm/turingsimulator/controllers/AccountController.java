@@ -7,6 +7,7 @@ import com.hubosm.turingsimulator.entities.User;
 import com.hubosm.turingsimulator.mappers.UserMapper;
 import com.hubosm.turingsimulator.services.UserService;
 import com.hubosm.turingsimulator.services.UserServiceImpl;
+import com.sun.security.auth.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,4 +45,15 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/delete/token")
+    public ResponseEntity<Void> generateDeleteAccountToken(@AuthenticationPrincipal User principal) throws Exception {
+        userService.addDeleteAccountToken(principal.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/delete/confirm")
+    public ResponseEntity<Void> deleteAccount(@RequestParam("token") String token) throws Exception {
+        userService.deleteAccount(token);
+        return ResponseEntity.ok().build();
+    }
 }

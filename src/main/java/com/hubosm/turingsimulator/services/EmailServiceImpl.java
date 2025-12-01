@@ -32,4 +32,13 @@ public class EmailServiceImpl implements EmailService{
         msg.setText("To change your password please enter URL: " + appUrl+"/password/change?token="+  token + "\nActivation link expires on: " + expirationDate);
         mailSender.send(msg);
     }
+
+    @Override
+    public void sendDeleteAccountMail(String userMail, String token, String expirationDate){
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(userMail);
+        msg.setSubject("Turing Machine Account deletion");
+        msg.setText("To confirm deletion of your account please enter URL: " + appUrl+"/account/delete?token="+  token + "\nActivation link expires on: " + expirationDate);
+        mailSender.send(msg);
+    }
 }
