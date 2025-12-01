@@ -1,5 +1,8 @@
 package com.hubosm.turingsimulator.dtos;
 
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -31,4 +34,7 @@ public class TuringMachineReturnDto {
 
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+
+    private boolean isPublic;
+    private String shareCode;
 }
