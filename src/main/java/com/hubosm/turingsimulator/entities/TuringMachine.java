@@ -76,4 +76,12 @@ public class TuringMachine {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
+
+    @Column(name = "is_public")
+    private boolean isPublic;
+
+    @Column(name = "share_code", unique = true)
+    @Size(min = 5, max = 5)
+    @Pattern(regexp = "^[A-Za-z0-9]+$")
+    private String shareCode;
 }

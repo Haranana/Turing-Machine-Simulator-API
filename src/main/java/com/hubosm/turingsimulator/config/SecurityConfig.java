@@ -39,8 +39,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(reg -> reg
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login",
                                 "/api/account/activate", "/api/simulations", "/api/simulations/nd",
-                        "/api/account/password/token" , "/api/account/password/change", "/api/account/delete/confirm").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                        "/api/account/password/token" , "/api/account/password/change", "/api/account/delete/confirm"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/health" , "/api/tm/public/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )

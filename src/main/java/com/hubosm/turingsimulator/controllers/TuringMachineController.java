@@ -75,4 +75,16 @@ public class TuringMachineController {
         return ResponseEntity.ok(returnDtoPage);
     }
 
+    @PostMapping("/visibility/{id}")
+    public ResponseEntity<Void> toggleTmVisibility(@AuthenticationPrincipal User principal, @PathVariable("id") Long id) throws Exception{
+        turingMachineService.toggleTmVisibility(id, principal.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/public/{shareCode}")
+    public ResponseEntity<TuringMachineReturnDto> getTmByShareCode(@PathVariable("shareCode") String shareCode) throws Exception{
+        TuringMachineReturnDto returnDto = turingMachineService.getTuringMachineByShareCode(shareCode);
+        return ResponseEntity.ok(returnDto);
+    }
+
 }

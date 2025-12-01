@@ -16,4 +16,6 @@ public interface TuringMachineRepository extends JpaRepository<TuringMachine, Lo
     Optional<TuringMachine> findByNameAndAuthor_Id(String name, Long authorId);
     List<TuringMachine> findAllByAuthor_Id(Long authorId);
     Page<TuringMachine> findAllByAuthor_Id(Long authorId, Pageable pageable);
+    Optional<TuringMachine> findByShareCode(String shareCode);
+    boolean existsByShareCode(String shareCode);
 }

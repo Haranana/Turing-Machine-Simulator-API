@@ -11,12 +11,15 @@ import com.hubosm.turingsimulator.exceptions.IntegrityException;
 import com.hubosm.turingsimulator.mappers.TuringMachineMapper;
 import com.hubosm.turingsimulator.repositories.TuringMachineRepository;
 import com.hubosm.turingsimulator.repositories.UserRepository;
+import com.hubosm.turingsimulator.utils.ShareCodesGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -150,5 +153,30 @@ public class TuringMachineServiceImpl implements TuringMachineService{
         Optional<TuringMachine> foundTm = turingMachineRepository.findByNameAndAuthor_Id(turingMachineName, authorId);
 
         return foundTm.map(turingMachineMapper::EntityToReturnDto);
+    }
+
+    @Override
+    public void toggleTmVisibility(Long id, Long requestSenderId) throws Exception{
+        TuringMachine tm = turingMachineRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Turing machine not found"));
+        if(!tm.getAuthor().getId().equals(requestSenderId)) throw new AccessDeniedException("User unauthorized to change this turing machine");
+
+        tm.setPublic(!tm.isPublic());
+        if(tm.isPublic()){
+            String newShareCode = ShareCodesGenerator.getShareCode();
+            while (turingMachineRepository.existsByShareCode(newShareCode)){
+                newShareCode = ShareCodesGenerator.getShareCode();
+            }
+            tm.setShareCode(newShareCode);
+        }else{
+            tm.setShareCode(null);
+        }
+        turingMachineRepository.save(tm);
+    }
+
+    @Override
+    public TuringMachineReturnDto getTuringMachineByShareCode(String shareCode) throws Exception{
+        TuringMachine tm = turingMachineRepository.findByShareCode(shareCode).orElseThrow(()->new ElementNotFoundException("Turing machine not found"));
+        if(!tm.isPublic()) throw new AccessDeniedException("Turing machine is not public");
+        return turingMachineMapper.EntityToReturnDto(tm);
     }
 }
