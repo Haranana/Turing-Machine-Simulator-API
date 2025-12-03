@@ -12,8 +12,6 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @Builder
 public class TuringMachineReturnDto {
-    private Long id;
-    private Long authorId;
 
     private String name;
     private String description;

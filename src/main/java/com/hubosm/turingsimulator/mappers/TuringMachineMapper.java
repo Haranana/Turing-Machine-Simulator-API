@@ -34,7 +34,7 @@ public class TuringMachineMapper {
     }
 
     public TuringMachineReturnDto EntityToReturnDto(TuringMachine entity){
-        return TuringMachineReturnDto.builder().id(entity.getId()).authorId(entity.getAuthor().getId())
+        return TuringMachineReturnDto.builder()
                 .name(entity.getName()).description(entity.getDescription())
                 .program(entity.getProgram()).initialState(entity.getInitialState())
                 .acceptState(entity.getAcceptState()).rejectState(entity.getRejectState())

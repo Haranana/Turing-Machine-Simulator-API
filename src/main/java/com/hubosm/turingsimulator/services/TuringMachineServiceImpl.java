@@ -53,7 +53,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     @Transactional
     public TuringMachineReturnDto editTuringMachine(TuringMachineEditDto dto, Long requestSenderId) throws Exception {
         TuringMachine entity = turingMachineRepository
-                .findById(dto.getId())
+                .findByNameAndAuthor_Id(dto.getName() , requestSenderId )
                 .orElseThrow(() -> new ElementNotFoundException("Turing machine not found"));
         if(!entity.getAuthor().getId().equals(requestSenderId)){
             throw new AccessDeniedException("Unauthorized user");
@@ -120,16 +120,16 @@ public class TuringMachineServiceImpl implements TuringMachineService{
 
     @Override
     @Transactional
-    public void deleteTuringMachine(Long id , Long requestSenderId) throws Exception {
+    public void deleteTuringMachine(String name , Long requestSenderId) throws Exception {
 
-        System.out.println("id: " + id + " :  req id:" + requestSenderId );
+        //System.out.println("id: " + id + " :  req id:" + requestSenderId );
         TuringMachine entity = turingMachineRepository
-                .findById(id)
+                .findByNameAndAuthor_Id(name , requestSenderId)
                 .orElseThrow(() -> new ElementNotFoundException("Turing machine not found"));
         if(!entity.getAuthor().getId().equals(requestSenderId)){
             throw new AccessDeniedException("Unauthorized user");
         }
-        turingMachineRepository.deleteById(id);
+        turingMachineRepository.deleteById(entity.getId());
     }
 
     @Override

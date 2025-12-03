@@ -28,7 +28,6 @@ public class TuringMachineController {
     @AuthenticationPrincipal User principal) throws Exception {
         TuringMachineReturnDto returnDto = turingMachineService.addTuringMachine(dto, principal.getId());
         return ResponseEntity.status(HttpStatus.CREATED).
-                header("Location", "/api/tm/" + returnDto.getId()).
                 body(returnDto);
     }
 
@@ -39,11 +38,11 @@ public class TuringMachineController {
         return ResponseEntity.ok(returnDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{name}")
     public ResponseEntity<Void> delete(@AuthenticationPrincipal User principal,
-                                       @PathVariable Long id) throws Exception{
-        System.out.println(principal + " " + id );
-        turingMachineService.deleteTuringMachine(id , principal.getId());
+                                       @PathVariable String name) throws Exception{
+        //System.out.println(principal + " " + id );
+        turingMachineService.deleteTuringMachine(name , principal.getId());
         return ResponseEntity.noContent().build();
     }
 

@@ -11,8 +11,6 @@ import lombok.*;
 @Builder
 public class TuringMachineEditDto {
 
-    private Long id;
-
     @Size(max = 30)
     private String name;
 
