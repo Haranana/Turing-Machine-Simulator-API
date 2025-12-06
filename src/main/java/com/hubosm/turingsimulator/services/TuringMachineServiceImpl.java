@@ -115,6 +115,10 @@ public class TuringMachineServiceImpl implements TuringMachineService{
             entity.setTapesAmount(ta);
         }
 
+        if(dto.getSpecialSettings()!=null){
+            entity.setSpecialSettings(dto.getSpecialSettings());
+        }
+
         return turingMachineMapper.EntityToReturnDto(turingMachineRepository.save(entity));
     }
 

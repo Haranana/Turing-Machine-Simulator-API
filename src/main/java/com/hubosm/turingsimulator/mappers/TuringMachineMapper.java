@@ -29,7 +29,7 @@ public class TuringMachineMapper {
                 .acceptState(dto.getAcceptState()).rejectState(dto.getRejectState())
                 .blank(dto.getBlank()).sep1(dto.getSep1()).sep2(dto.getSep2())
                 .moveRight(dto.getMoveRight()).moveLeft(dto.getMoveLeft()).moveStay(dto.getMoveStay())
-                .isPublic(false).shareCode(null).tapesAmount(dto.getTapesAmount()).build();
+                .isPublic(false).shareCode(null).tapesAmount(dto.getTapesAmount()).specialSettings(dto.getSpecialSettings()).build();
 
     }
 
@@ -41,7 +41,7 @@ public class TuringMachineMapper {
                 .blank(entity.getBlank()).sep1(entity.getSep1())
                 .sep2(entity.getSep2()).moveRight(entity.getMoveRight()).moveLeft(entity.getMoveLeft())
                 .moveStay(entity.getMoveStay()).tapesAmount(entity.getTapesAmount()).isPublic(entity.isPublic())
-                .shareCode(entity.getShareCode()).createdAt(entity.getCreatedAt()).updatedAt(entity.getUpdatedAt()).build();
+                .shareCode(entity.getShareCode()).createdAt(entity.getCreatedAt()).updatedAt(entity.getUpdatedAt()).specialSettings(entity.getSpecialSettings()).build();
     }
 
 }

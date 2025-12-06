@@ -20,6 +20,7 @@ public class JwtServiceImpl {
     @Value("${security.jwt.ttl-seconds:3600}") private long ttlSeconds;
 
     public String generateAccessToken(UserDetails user) {
+
         Instant now = Instant.now();
         return Jwts.builder()
                 .setSubject(user.getUsername())

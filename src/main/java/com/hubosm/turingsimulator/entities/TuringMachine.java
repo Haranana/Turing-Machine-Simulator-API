@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -84,4 +86,8 @@ public class TuringMachine {
     @Size(min = 5, max = 5)
     @Pattern(regexp = "^[A-Za-z0-9]+$")
     private String shareCode;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "special_settings", columnDefinition = "jsonb")
+    private SpecialSettings specialSettings;
 }

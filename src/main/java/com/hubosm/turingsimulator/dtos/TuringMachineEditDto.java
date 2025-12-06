@@ -1,5 +1,7 @@
 package com.hubosm.turingsimulator.dtos;
 
+import com.hubosm.turingsimulator.entities.SpecialSettings;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -48,4 +50,7 @@ public class TuringMachineEditDto {
 
     @Min(1)
     private Integer tapesAmount;
+
+    @Valid
+    private SpecialSettings specialSettings;
 }

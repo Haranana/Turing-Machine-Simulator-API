@@ -31,9 +31,9 @@ public class TuringMachineController {
                 body(returnDto);
     }
 
-    @PutMapping
+    @PutMapping("/edit")
     public ResponseEntity<TuringMachineReturnDto> edit(@Valid @RequestBody TuringMachineEditDto dto,
-                                                       @AuthenticationPrincipal User principal) throws Exception{
+                                                       @AuthenticationPrincipal User principal ) throws Exception{
         TuringMachineReturnDto returnDto = turingMachineService.editTuringMachine(dto, principal.getId());
         return ResponseEntity.ok(returnDto);
     }

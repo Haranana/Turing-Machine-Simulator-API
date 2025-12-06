@@ -1,5 +1,7 @@
 package com.hubosm.turingsimulator.dtos;
 
+import com.hubosm.turingsimulator.entities.SpecialSettings;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -55,4 +57,8 @@ public class TuringMachineCreateDto {
     @NotNull
     @Min(1)
     private Integer tapesAmount;
+
+    @NotNull
+    @Valid
+    private SpecialSettings specialSettings;
 }

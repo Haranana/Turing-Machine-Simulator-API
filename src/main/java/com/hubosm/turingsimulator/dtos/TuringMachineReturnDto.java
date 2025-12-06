@@ -1,5 +1,6 @@
 package com.hubosm.turingsimulator.dtos;
 
+import com.hubosm.turingsimulator.entities.SpecialSettings;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -35,4 +36,6 @@ public class TuringMachineReturnDto {
 
     private boolean isPublic;
     private String shareCode;
+
+    private SpecialSettings specialSettings;
 }
