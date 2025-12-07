@@ -12,7 +12,7 @@ import java.util.List;
 public class SimulationCreateDto {
     @NotBlank private String initialState;
     @NotBlank private String acceptState;
-    @NotBlank private String rejectState;
+    private String rejectState;
 
     @NotNull  private Collection<String> program;
     @NotBlank private String sep1;

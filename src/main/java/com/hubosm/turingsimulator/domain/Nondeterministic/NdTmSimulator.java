@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -294,10 +295,12 @@ public class NdTmSimulator {
         out.getNodes().put(0, new SimulationNode(0));
         simulationQueue.add(new Pair<>(0, startingTape));
         State currentState = initialState;
+        boolean stepLimitExceeded = false;
 
         while (!simulationQueue.isEmpty()){
 
             if(out.getNodes().size() > maxSteps){
+                stepLimitExceeded = true;
                 simulationQueue.clear();
                 break;
             }
@@ -314,7 +317,13 @@ public class NdTmSimulator {
                 currentState = currentNode.getStep().get(0).stateAfter();
             }
 
-            if (currentState.equals(acceptState) || currentState.equals(rejectState)) {
+            if (currentState.equals(acceptState)) {
+                currentNode.setOutput("ACCEPT");
+                continue;
+            }
+
+            if (rejectState != null && currentState.equals(rejectState)) {
+                currentNode.setOutput("REJECT");
                 continue;
             }
 
@@ -326,9 +335,16 @@ public class NdTmSimulator {
                 readCharacters[i] = String.valueOf(rc[i]);
 
             //try to find full transition(s) given the left side
-            State finalCurrentState = currentState;
-            List<MultiTransition> tr = program.get(currentState, readCharacters).orElseThrow(() -> new RuntimeException(
-                    "No transition for state=" + finalCurrentState.name() + " reads=" + String.join(",", readCharacters)));
+            //State finalCurrentState = currentState;
+            //List<MultiTransition> tr = program.get(currentState, readCharacters).orElseThrow(() -> new RuntimeException(
+             //       "No transition for state=" + finalCurrentState.name() + " reads=" + String.join(",", readCharacters)));
+
+            Optional<List<MultiTransition>> optionalMultiTransitions = program.get(currentState, readCharacters);
+            if (optionalMultiTransitions.isEmpty()) {
+                currentNode.setOutput("HALT");
+                continue;
+            }
+            List<MultiTransition> tr = optionalMultiTransitions.get();
 
             //for each transition a node is created alongside with tape after move specified in transition
             //newly created node has assigned previousID as id of current node
@@ -364,9 +380,22 @@ public class NdTmSimulator {
             });
         }
 
-        //security, if there were no steps made (root is the only node), root also should be deleted
-        if(out.getNodes().size()==1 && out.getNodes().get(0).getNextIds().isEmpty()){
-            out.getNodes().clear();
+        //if there were no steps made (root is the only node), root also should be deleted
+        //but if there's halt on root there should be some info on this
+        if (out.getNodes().size() == 1) {
+            SimulationNode root = out.getNodes().get(0);
+            if (root.getNextIds().isEmpty() && root.getOutput() == null) {
+                out.getNodes().clear();
+            }
+        }
+
+        //if step limit exceeded leafs should have their output set as "LIMIT"
+        if(stepLimitExceeded) {
+            for (Map.Entry<Integer, SimulationNode> entry : out.getNodes().entrySet()) {
+                if (entry.getValue().getNextIds().isEmpty() && entry.getValue().getOutput() == null) {
+                    entry.getValue().setOutput("LIMIT");
+                }
+            }
         }
         return out;
     }

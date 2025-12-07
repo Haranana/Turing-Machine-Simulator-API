@@ -16,4 +16,5 @@ public class SimulationNode {
     Integer prevId = null;
     List<Integer> nextIds = new ArrayList<>();
     List<FullSimulationStep> step = new ArrayList<>();
+    String output = null;
 }
