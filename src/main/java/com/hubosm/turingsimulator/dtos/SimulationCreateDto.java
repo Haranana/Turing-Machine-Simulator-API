@@ -21,4 +21,5 @@ public class SimulationCreateDto {
 
     @NotNull  private List<String> input;
     @NotNull  private Integer tapesAmount;
+    @NotNull private boolean rejectOnNonAccept;
 }

@@ -159,9 +159,10 @@ public class TuringMachineServiceImpl implements TuringMachineService{
         return foundTm.map(turingMachineMapper::EntityToReturnDto);
     }
 
+    @Transactional
     @Override
-    public void toggleTmVisibility(Long id, Long requestSenderId) throws Exception{
-        TuringMachine tm = turingMachineRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Turing machine not found"));
+    public void toggleTmVisibility(String name, Long requestSenderId) throws Exception{
+        TuringMachine tm = turingMachineRepository.findByNameAndAuthor_Id(name, requestSenderId).orElseThrow(()->new ElementNotFoundException("Turing machine not found"));
         if(!tm.getAuthor().getId().equals(requestSenderId)) throw new AccessDeniedException("User unauthorized to change this turing machine");
 
         tm.setPublic(!tm.isPublic());
@@ -178,6 +179,7 @@ public class TuringMachineServiceImpl implements TuringMachineService{
     }
 
     @Override
+    @Transactional
     public TuringMachineReturnDto getTuringMachineByShareCode(String shareCode) throws Exception{
         TuringMachine tm = turingMachineRepository.findByShareCode(shareCode).orElseThrow(()->new ElementNotFoundException("Turing machine not found"));
         if(!tm.isPublic()) throw new AccessDeniedException("Turing machine is not public");

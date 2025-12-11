@@ -74,9 +74,10 @@ public class TuringMachineController {
         return ResponseEntity.ok(returnDtoPage);
     }
 
-    @PostMapping("/visibility/{id}")
-    public ResponseEntity<Void> toggleTmVisibility(@AuthenticationPrincipal User principal, @PathVariable("id") Long id) throws Exception{
-        turingMachineService.toggleTmVisibility(id, principal.getId());
+    @PostMapping("/visibility/{name}")
+    public ResponseEntity<Void> toggleTmVisibility(@AuthenticationPrincipal User principal, @PathVariable("name") String name) throws Exception{
+        System.out.println("Got: " + principal.getId() + " | " + name);
+        turingMachineService.toggleTmVisibility(name, principal.getId());
         return ResponseEntity.ok().build();
     }
 

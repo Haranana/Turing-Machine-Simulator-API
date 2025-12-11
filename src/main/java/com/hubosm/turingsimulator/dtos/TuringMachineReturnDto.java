@@ -1,5 +1,6 @@
 package com.hubosm.turingsimulator.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hubosm.turingsimulator.entities.SpecialSettings;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Pattern;
@@ -34,8 +35,14 @@ public class TuringMachineReturnDto {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    private boolean isPublic;
+    private Boolean isPublic;
     private String shareCode;
 
     private SpecialSettings specialSettings;
+
+    @JsonProperty("isPublic")
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
 }

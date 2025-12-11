@@ -29,6 +29,7 @@ public class NdTmSimulator {
 
     private  int tapesAmount;
     private NdTmProgram program;
+    private boolean rejectOnNonAccept;
 
     //1 Tapes object per edge
     private List<Tapes> tapes;
@@ -41,7 +42,9 @@ public class NdTmSimulator {
             String sep1,
             String sep2,
             String blank,
-            int tapesAmount
+            int tapesAmount,
+            boolean rejectOnNonAccept
+
     ) {
         this.initialState = new State(initialState);
         this.acceptState = new State(acceptState);
@@ -61,6 +64,7 @@ public class NdTmSimulator {
         }
 
         this.tapes = new ArrayList<>();
+        this.rejectOnNonAccept = rejectOnNonAccept;
     }
 
     //returns step of given edge and id for every tape
@@ -341,7 +345,12 @@ public class NdTmSimulator {
 
             Optional<List<MultiTransition>> optionalMultiTransitions = program.get(currentState, readCharacters);
             if (optionalMultiTransitions.isEmpty()) {
-                currentNode.setOutput("HALT");
+                if(this.rejectOnNonAccept) {
+                    currentNode.setOutput("REJECT");
+                }
+                else {
+                    currentNode.setOutput("HALT");
+                }
                 continue;
             }
             List<MultiTransition> tr = optionalMultiTransitions.get();
@@ -393,7 +402,11 @@ public class NdTmSimulator {
         if(stepLimitExceeded) {
             for (Map.Entry<Integer, SimulationNode> entry : out.getNodes().entrySet()) {
                 if (entry.getValue().getNextIds().isEmpty() && entry.getValue().getOutput() == null) {
-                    entry.getValue().setOutput("LIMIT");
+                    if(this.rejectOnNonAccept){
+                        entry.getValue().setOutput("REJECT");
+                    }else{
+                        entry.getValue().setOutput("LIMIT");
+                    }
                 }
             }
         }

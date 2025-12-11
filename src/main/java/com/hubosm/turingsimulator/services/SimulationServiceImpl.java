@@ -39,7 +39,8 @@ public class SimulationServiceImpl implements SimulationService {
                 dto.getSep1(),
                 dto.getSep2(),
                 dto.getBlank(),
-                dto.getTapesAmount()
+                dto.getTapesAmount(),
+                dto.isRejectOnNonAccept()
         );
         return tm.createSimulation(
                 dto.getInput());

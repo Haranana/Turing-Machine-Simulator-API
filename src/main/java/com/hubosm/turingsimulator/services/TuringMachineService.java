@@ -19,7 +19,7 @@ public interface TuringMachineService {
     void deleteTuringMachine(String name ,Long requestSenderId) throws Exception;
     TuringMachineReturnDto addTuringMachine(TuringMachineCreateDto dto, Long authorId) throws Exception;
     Optional<TuringMachineReturnDto> existsByNameAndAuthor(String turingMachineName, Long authorId) throws Exception;
-    void toggleTmVisibility(Long id, Long requestSenderId) throws Exception;
+    void toggleTmVisibility(String name, Long requestSenderId) throws Exception;
     TuringMachineReturnDto getTuringMachineByShareCode(String shareCode) throws Exception;
 
 }
