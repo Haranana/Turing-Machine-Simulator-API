@@ -1,6 +1,6 @@
 package com.hubosm.turingsimulator.domain;
 
-import com.hubosm.turingsimulator.dtos.NonDetSimulationDto;
+import com.hubosm.turingsimulator.dtos.SimulationReturnDto;
 import com.hubosm.turingsimulator.utils.Pair;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,9 +62,9 @@ public class TmSimulator {
         this.rejectOnNonAccept = rejectOnNonAccept;
     }
 
-    public NonDetSimulationDto createSimulation(List<String> inputs){
+    public SimulationReturnDto createSimulation(List<String> inputs){
         //create dto, prepare function range values
-        NonDetSimulationDto out = new NonDetSimulationDto();
+        SimulationReturnDto out = new SimulationReturnDto();
         final int maxSteps = SimulationConfig.maxSteps;
 
         //prepare starting tape
@@ -92,10 +92,10 @@ public class TmSimulator {
             Tapes currentTapes = simulationElement.value();
             SimulationNode currentNode = out.getNodes().get(currentNodeId);
 
-            if (currentNodeId == 0 || currentNode.getStep().isEmpty()) {
+            if (currentNodeId == 0 || currentNode.getSteps().isEmpty()) {
                 currentState = initialState;
             } else {
-                currentState = currentNode.getStep().get(0).stateAfter();
+                currentState = currentNode.getStateAfter();
             }
 
             if (currentState.equals(acceptState)) {
@@ -158,9 +158,12 @@ public class TmSimulator {
                         case RIGHT -> newTapes.get(tapeId).moveHeadRight();
                         case STAY -> {}
                     }
-                    newNodeSimulationSteps.add(new SimulationStep(tapeId, actions[tapeId], readCharacters[tapeId], writtenCharacters[tapeId], finalCurrentState1, nextState, tapeState));
+                    newNodeSimulationSteps.add(new SimulationStep(tapeId, actions[tapeId], readCharacters[tapeId], writtenCharacters[tapeId], tapeState));
+
                 }
-                newNode.setStep(newNodeSimulationSteps);
+                newNode.setStateBefore(finalCurrentState1);
+                newNode.setStateAfter(nextState);
+                newNode.setSteps(newNodeSimulationSteps);
 
                 simulationQueue.add(new Pair<>(newNode.getId(), newTapes));
             });

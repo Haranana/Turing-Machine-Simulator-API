@@ -11,6 +11,6 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
-public class NonDetSimulationDto {
+public class SimulationReturnDto {
     Map<Integer, SimulationNode> nodes = new HashMap<>();
 }
