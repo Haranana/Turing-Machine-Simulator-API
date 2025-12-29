@@ -1,7 +1,5 @@
 package com.hubosm.turingsimulator.domain;
 
-
-import java.util.Collection;
 import java.util.Map;
 
 // used in response to the app

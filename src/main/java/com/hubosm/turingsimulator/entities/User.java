@@ -4,15 +4,11 @@ import com.hubosm.turingsimulator.mappers.AccountStatusConverter;
 import com.hubosm.turingsimulator.utils.AccountStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;

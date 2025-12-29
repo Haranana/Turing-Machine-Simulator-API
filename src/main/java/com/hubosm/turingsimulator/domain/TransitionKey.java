@@ -7,10 +7,10 @@ import java.util.List;
 
 @EqualsAndHashCode
 @AllArgsConstructor
-public class MultiTransitionKey {
+public class TransitionKey {
     private final String state;
     private final List<String> reads;
-    public static MultiTransitionKey of(State s, String[] reads){
-        return new MultiTransitionKey(s.name(), List.of(reads));
+    public static TransitionKey of(State s, String[] reads){
+        return new TransitionKey(s.name(), List.of(reads));
     }
 }

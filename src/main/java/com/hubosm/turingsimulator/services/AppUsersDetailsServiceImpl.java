@@ -1,6 +1,5 @@
 package com.hubosm.turingsimulator.services;
 
-import com.hubosm.turingsimulator.exceptions.ElementNotFoundException;
 import com.hubosm.turingsimulator.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -2,17 +2,12 @@ package com.hubosm.turingsimulator.mappers;
 
 import com.hubosm.turingsimulator.dtos.TuringMachineCreateDto;
 import com.hubosm.turingsimulator.dtos.TuringMachineReturnDto;
-import com.hubosm.turingsimulator.dtos.UserCreateDto;
-import com.hubosm.turingsimulator.dtos.UserReturnDto;
 import com.hubosm.turingsimulator.entities.TuringMachine;
 import com.hubosm.turingsimulator.entities.User;
 import com.hubosm.turingsimulator.repositories.TuringMachineRepository;
 import com.hubosm.turingsimulator.repositories.UserRepository;
-import com.hubosm.turingsimulator.utils.AccountStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor

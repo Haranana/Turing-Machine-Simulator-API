@@ -7,7 +7,6 @@ import com.hubosm.turingsimulator.entities.TuringMachine;
 import com.hubosm.turingsimulator.exceptions.AccessDeniedException;
 import com.hubosm.turingsimulator.exceptions.DuplicateTmNameException;
 import com.hubosm.turingsimulator.exceptions.ElementNotFoundException;
-import com.hubosm.turingsimulator.exceptions.IntegrityException;
 import com.hubosm.turingsimulator.mappers.TuringMachineMapper;
 import com.hubosm.turingsimulator.repositories.TuringMachineRepository;
 import com.hubosm.turingsimulator.repositories.UserRepository;
@@ -19,11 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

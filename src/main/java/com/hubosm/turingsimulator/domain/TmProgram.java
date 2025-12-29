@@ -1,39 +1,15 @@
 package com.hubosm.turingsimulator.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import com.hubosm.turingsimulator.utils.Pair;
-
 import java.util.*;
 
-
 public class TmProgram {
-    private final Map<Pair<State, Character> , Transition> indexedTransitions;
-    @Getter
-    private final List<Transition> transitions;
+    private final Map<TransitionKey, List<Transition>> map = new HashMap<>();
+    public void add(Transition t){
+        TransitionKey key = TransitionKey.of(t.getCurrentState(), t.getRead());
+        map.computeIfAbsent(key, k -> new ArrayList<>()).add(t);
 
-    public TmProgram(){
-        this.transitions = new ArrayList<>();
-        this.indexedTransitions = new HashMap<>();
     }
-
-    public void addTransition(Transition transition){
-        indexedTransitions.put(new Pair<>(transition.getCurrentState(), transition.getReadSymbol()) , transition);
-        transitions.add(transition);
-    }
-
-    public Optional<Transition> getTransitionByLeftSide(State state, char readSymbol){
-        return Optional.ofNullable(indexedTransitions.get(new Pair<>(state, readSymbol)));
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder resultStringBuffer = new StringBuilder();
-        for(Transition trans : transitions) {
-            resultStringBuffer.append(trans.toString()).append(System.lineSeparator());
-        }
-
-        return resultStringBuffer.toString();
+    public Optional<List<Transition>> get(State s, String[] reads){
+        return Optional.ofNullable(map.get(TransitionKey.of(s, reads)));
     }
 }

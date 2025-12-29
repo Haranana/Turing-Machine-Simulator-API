@@ -32,7 +32,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final EmailServiceImpl emailService;
-    private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
     private final SecurityServiceImpl securityService;
 
     @Override
