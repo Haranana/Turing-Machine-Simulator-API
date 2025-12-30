@@ -5,6 +5,7 @@ import com.hubosm.turingsimulator.services.JwtAuthFilter;
 import com.hubosm.turingsimulator.services.SecurityServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,6 +30,9 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtFilter;
     private final AppUsersDetailsServiceImpl appUsersDetailsService;
     private final SecurityServiceImpl securityService;
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -70,7 +74,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("http://localhost:5173"));
+        var origins = List.of(allowedOrigins.split("\\s*,\\s*"));
+        cfg.setAllowedOrigins(origins);
         cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("Authorization","Content-Type"));
         cfg.setExposedHeaders(List.of("Authorization"));
