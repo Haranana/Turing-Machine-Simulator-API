@@ -17,7 +17,7 @@ public class SimulationController {
 
     @PostMapping()
     public ResponseEntity<SimulationReturnDto> simulate(@Valid @RequestBody SimulationCreateDto dto){
-        System.out.println("got dto in controller");
+        System.out.println("Request for simulation: " + dto);
         SimulationReturnDto outputDto = simulationService.runSimulation(dto);
 
         return ResponseEntity.accepted().body(outputDto);
