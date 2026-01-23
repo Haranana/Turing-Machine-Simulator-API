@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class SimulationServiceImpl implements SimulationService {
-
     public SimulationReturnDto runSimulation(SimulationCreateDto dto){
         if (dto.getInput().size() != dto.getTapesAmount())
             throw new IllegalArgumentException("input size must equal tapesAmount");
@@ -24,6 +23,7 @@ public class SimulationServiceImpl implements SimulationService {
                 dto.getTapesAmount(),
                 dto.isRejectOnNonAccept()
         );
+
         return tm.createSimulation(
                 dto.getInput());
     }

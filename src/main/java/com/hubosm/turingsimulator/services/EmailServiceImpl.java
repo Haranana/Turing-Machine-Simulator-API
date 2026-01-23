@@ -20,7 +20,7 @@ public class EmailServiceImpl implements EmailService{
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(userMail);
         msg.setSubject("Turing Machine Account Activation");
-        msg.setText("To activate your account please enter URL: " + appUrl+"activate?token="+  activationToken + "\nActivation link expires on: " + expirationDate);
+        msg.setText("To activate your account please enter URL: " + appUrl+"app/activate?token="+  activationToken + "\nActivation link expires on: " + expirationDate);
         mailSender.send(msg);
     }
 
@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService{
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(userMail);
         msg.setSubject("Turing Machine Password change");
-        msg.setText("To change your password please enter URL: " + appUrl+"password/change?token="+  token + "\nActivation link expires on: " + expirationDate);
+        msg.setText("To change your password please enter URL: " + appUrl+"app/password/change?token="+  token + "\nActivation link expires on: " + expirationDate);
         mailSender.send(msg);
     }
 
@@ -38,7 +38,7 @@ public class EmailServiceImpl implements EmailService{
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(userMail);
         msg.setSubject("Turing Machine Account deletion");
-        msg.setText("To confirm deletion of your account please enter URL: " + appUrl+"account/delete?token="+  token + "\nActivation link expires on: " + expirationDate);
+        msg.setText("To confirm deletion of your account please enter URL: " + appUrl+"app/account/delete?token="+  token + "\nActivation link expires on: " + expirationDate);
         mailSender.send(msg);
     }
 }

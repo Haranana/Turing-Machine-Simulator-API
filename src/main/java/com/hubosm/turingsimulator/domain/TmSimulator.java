@@ -26,9 +26,6 @@ public class TmSimulator {
     private TmProgram program;
     private boolean rejectOnNonAccept;
 
-    //1 Tapes object per edge
-    private List<Tapes> tapes;
-
     public TmSimulator(
             String initialState,
             String acceptState,
@@ -58,29 +55,28 @@ public class TmSimulator {
             program.add(t);
         }
 
-        this.tapes = new ArrayList<>();
         this.rejectOnNonAccept = rejectOnNonAccept;
     }
 
     public SimulationReturnDto createSimulation(List<String> inputs){
+
         //create dto, prepare function range values
         SimulationReturnDto out = new SimulationReturnDto();
-        final int maxSteps = SimulationConfig.maxSteps;
+        final int maxNodes = SimulationConfig.maxSteps;
 
-        //prepare starting tape
-        Tapes startingTape = new Tapes(tapesAmount, blank);
-        startingTape.placeInputs(inputs);
+        //prepare starting tapes
+        Tapes startingTapes = new Tapes(tapesAmount, blank);
+        startingTapes.placeInputs(inputs);
 
-        //queue stores nodeId and Tapes Object for this nodeId
+        //queue stores a pair of nodeId and tapes snapshot when this node needed to be simulated
         Queue<Pair<Integer, Tapes>> simulationQueue = new ArrayDeque<>();
         out.getNodes().put(0, new SimulationNode(0));
-        simulationQueue.add(new Pair<>(0, startingTape));
-        State currentState = initialState;
+        simulationQueue.add(new Pair<>(0, startingTapes));
+        State currentState;
         boolean stepLimitExceeded = false;
 
         while (!simulationQueue.isEmpty()){
-
-            if(out.getNodes().size() > maxSteps){
+            if(out.getNodes().size() > maxNodes){
                 stepLimitExceeded = true;
                 simulationQueue.clear();
                 break;
@@ -103,7 +99,7 @@ public class TmSimulator {
                 continue;
             }
 
-            if (rejectState != null && currentState.equals(rejectState)) {
+            if (currentState.equals(rejectState)) {
                 currentNode.setOutput("REJECT");
                 continue;
             }
@@ -115,11 +111,9 @@ public class TmSimulator {
             for (int i=0;i<tapesAmount;i++)
                 readCharacters[i] = String.valueOf(rc[i]);
 
-            //try to find full transition(s) given the left side
-            //State finalCurrentState = currentState;
-            //List<MultiTransition> tr = program.get(currentState, readCharacters).orElseThrow(() -> new RuntimeException(
-             //       "No transition for state=" + finalCurrentState.name() + " reads=" + String.join(",", readCharacters)));
 
+            //find transition for current machine configuration
+            //if none is found set appropriate output for this node
             Optional<List<Transition>> optionalMultiTransitions = program.get(currentState, readCharacters);
             if (optionalMultiTransitions.isEmpty()) {
                 if(this.rejectOnNonAccept) {
@@ -167,15 +161,6 @@ public class TmSimulator {
 
                 simulationQueue.add(new Pair<>(newNode.getId(), newTapes));
             });
-        }
-
-        //if there were no steps made (root is the only node), root also should be deleted
-        //but if there's halt on root there should be some info on this
-        if (out.getNodes().size() == 1) {
-            SimulationNode root = out.getNodes().get(0);
-            if (root.getNextIds().isEmpty() && root.getOutput() == null) {
-                out.getNodes().clear();
-            }
         }
 
         //if step limit exceeded leafs should have their output set as "LIMIT"
